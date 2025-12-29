@@ -1,0 +1,18 @@
+{
+  "align_cards": "scrollbox",
+  "max_height_px": "500",
+  "Number of deck name splits": 3,
+  "gen4_evolutions": true,
+  "gen2": true,
+  "gen3": true,
+  "gen4": true,
+  "gen5": true,
+  "X_or_Y_mega_evolutions": "X",
+
+  "PokeType": true,
+  "auto_open_trade": false,
+
+  "is_change_log_2024_03_26": true,
+  "is_rate_this": true,
+  "show_pokemon_in_reviewer": true
+}

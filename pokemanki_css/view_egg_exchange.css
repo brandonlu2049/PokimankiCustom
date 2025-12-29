@@ -1,0 +1,179 @@
+.egg-upgrade-section {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.egg-upgrade-title {
+  color: #eee;
+  font-size: 1.2em;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.rarity-section {
+  margin-bottom: 25px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 10px;
+  padding: 15px;
+}
+
+.rarity-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 10px;
+}
+
+.rarity-header-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.rarity-badge {
+  font-weight: bold;
+  font-size: 1.1em;
+  padding: 6px 14px;
+  border-radius: 6px;
+  min-width: 30px;
+  text-align: center;
+}
+
+.rarity-info {
+  color: #aaa;
+  font-size: 0.95em;
+}
+
+.selection-count {
+  color: #8bc34a;
+  font-weight: bold;
+}
+
+.rarity-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.action-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85em;
+  transition: all 0.2s;
+}
+
+.select-all-btn {
+  background: rgba(139, 195, 74, 0.2);
+  color: #8bc34a;
+}
+
+.select-all-btn:hover {
+  background: rgba(139, 195, 74, 0.3);
+}
+
+.clear-btn {
+  background: rgba(244, 67, 54, 0.2);
+  color: #f44336;
+}
+
+.clear-btn:hover {
+  background: rgba(244, 67, 54, 0.3);
+}
+
+.eggs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.egg-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid transparent;
+  border-radius: 8px;
+  padding: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.egg-card:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+.egg-card.egg-selected {
+  border-color: #8bc34a;
+  background: rgba(139, 195, 74, 0.15);
+  box-shadow: 0 0 10px rgba(139, 195, 74, 0.3);
+}
+
+.egg-card img {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+}
+
+.egg-card-level {
+  font-size: 0.8em;
+  color: #888;
+  margin-top: 5px;
+}
+
+.upgrade-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.upgrade-arrow {
+  color: #888;
+  font-size: 1.5em;
+}
+
+.upgrade-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+
+.upgrade-btn:enabled {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.upgrade-btn:enabled:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.upgrade-btn:disabled {
+  background: #333;
+  color: #666;
+  cursor: not-allowed;
+}
+
+.no-eggs-msg {
+  color: #666;
+  text-align: center;
+  padding: 20px;
+  font-style: italic;
+}
+
+.s-rank-section {
+  text-align: center;
+  padding: 10px;
+  color: #888;
+}

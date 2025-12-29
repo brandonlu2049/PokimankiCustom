@@ -1,0 +1,8 @@
+__pycache__
+/meta.json
+*.zip
+*.webp
+*.png
+*.jpg
+/user_files/
+*.ankiaddon

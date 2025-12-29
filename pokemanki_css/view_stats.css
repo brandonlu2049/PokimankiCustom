@@ -1,0 +1,74 @@
+.pk-st-container {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 10px;
+  margin: 10px 10px;
+  overflow-x: auto;
+}
+.pk-st-single {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 10px;
+  margin-top: 10px;
+}
+.pk-st-shrink {
+  flex-shrink: 0;
+}
+.pk-st-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 200px;
+  padding: 10px;
+  border: 1px solid #777;
+  border-radius: 10px;
+  box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.2);
+}
+.pk-st-card-info {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+.pk-st-card-sp {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  margin-bottom: 10px;
+}
+.pk-st-divider {
+  background-color: #777;
+  height: 1px;
+}
+.pk-st-card-top {
+  display: flex;
+  justify-content: space-between;
+}
+.pk-st-card-name {
+  display: flex;
+  flex-direction: column;
+  max-width: 85%;
+  overflow-wrap: break-word;
+}
+.pk-st-card-lvl {
+  display: flex;
+  flex-direction: column;
+  margin-left: 10px;
+}
+.pk-st-card-img {
+  max-width: 180px;
+  width: auto;
+  margin: 10px 0;
+}
+/* .pk-st-card-xp {
+} */
+
+/* Current Pokemon highlighting */
+.pk-st-current {
+  border: 3px solid #4caf50 !important;
+  background-color: rgba(76, 175, 80, 0.1);
+  box-shadow: 0 0 15px rgba(76, 175, 80, 0.4);
+}

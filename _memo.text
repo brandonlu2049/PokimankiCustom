@@ -1,0 +1,18 @@
+
+
+Enhanced
+Added Pokemon to Reviewer (Beta).
+Extends Anki's top toolbar to display Pokemon and decks or tags on the answer screen.
+This function can be optionally disabled.
+
+Added trade function to Tagmon.
+Added an option to hide Pokeball on toolbar.
+Adjusted message window.
+
+
+Fixed bugs
+Fixed a bug when changing profiles
+It should work without restarting.
+
+Fixed non working tags menu in tagmon
+You can change tags by pressing Tags in the menu.
