@@ -28,11 +28,10 @@ def message_handler(
     # https://github.com/ankitects/anki/blob/main/qt/tools/genhooks_gui.py#L618
     if not message.startswith("Pokemanki#"):
         return handled
-    f = get_synced_conf()["decks_or_tags"]
     if message == "Pokemanki#currentDeck":
-        html = pokemon_display(f, False).replace("`", "'")
+        html = pokemon_display(False).replace("`", "'")
     elif message == "Pokemanki#wholeCollection":
-        html = pokemon_display(f, True).replace("`", "'")
+        html = pokemon_display(True).replace("`", "'")
     else:
         starts = "Pokemanki#search#"
         term = message[len(starts) :]

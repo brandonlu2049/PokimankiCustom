@@ -25,8 +25,6 @@ is_tarad_window_run = False
 def addButtons(handled, message, context):
 
     if message == "shige_pokemanki_button_1":
-        # f = get_synced_conf()["decks_or_tags"]
-        # if f != "tags":
         actions = mw.pokemenu.actions()
         for action in actions:
             if action.text() == "&Trade":
@@ -231,13 +229,11 @@ def run_trade_window(*args,**kwargs):
         toggleaction_e.setChecked(config.get("hide_banner_and_options", False))
 
         if config["auto_open_trade"]:
-            f = get_synced_conf()["decks_or_tags"]
-            if f != "tags":
-                actions = mw.pokemenu.actions()
-                for action in actions:
-                    if action.text() == "&Trade":
-                        action.trigger()
-                        break
+            actions = mw.pokemenu.actions()
+            for action in actions:
+                if action.text() == "&Trade":
+                    action.trigger()
+                    break
     QTimer.singleShot(1000, open_pokemanki_trade)
 
     is_tarad_window_run = True

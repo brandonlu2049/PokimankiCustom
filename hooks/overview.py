@@ -11,7 +11,6 @@
 from aqt import mw
 from aqt.overview import Overview, OverviewContent
 
-from ..config import get_synced_conf
 from ..display import pokemon_display
 from ..utils import addon_dir
 
@@ -34,8 +33,6 @@ def overview_open(overview: "Overview", content: "OverviewContent") -> None:
     js = (addon_dir / "web.js").read_text(encoding="utf-8")
     css = (addon_dir / "pokemanki_css" / "view_stats.css").read_text(encoding="utf-8")
 
-    f = get_synced_conf()["decks_or_tags"]
-
     curr_deck = mw.col.decks.active()[0]
     print(curr_deck)
 
@@ -46,7 +43,7 @@ def overview_open(overview: "Overview", content: "OverviewContent") -> None:
         config["Show Pokemon in Home and overview"] = False # Avoid Freeze
         mw.addonManager.writeConfig(__name__, config)
 
-        html = pokemon_display(f, False).replace("`", "'") # currentDeck
+        html = pokemon_display(False).replace("`", "'") # currentDeck
         overview_deck_html_map[curr_deck] = html
         print("make new html")
 

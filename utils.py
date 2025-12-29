@@ -100,11 +100,8 @@ def no_pokemon() -> None:
 
 # TODO: remove this function
 def get_pokemons() -> Tuple[List[str], str]:
-    f = get_synced_conf()["decks_or_tags"]
-    if f == "tags":
-        pokemons = get_synced_conf()["tagmon_list"]
-    else:
-        pokemons = get_synced_conf()["pokemon_list"]
+
+    pokemons = get_synced_conf()["pokemon_list"]
     if pokemons is None:
         no_pokemon()
         return (None, None)

@@ -44,15 +44,10 @@ def deck_browser_open(deck_browser: "DeckBrowser", content: "DeckBrowserContent"
     js = (addon_dir / "web.js").read_text(encoding="utf-8")
     css = (addon_dir / "pokemanki_css" / "view_stats.css").read_text(encoding="utf-8")
 
-    try:
-        f = get_synced_conf()["decks_or_tags"]
-    except:
-        return
-
     config["Show Pokemon in Home and overview"] = False # Avoid Freeze
     mw.addonManager.writeConfig(__name__, config)
 
-    html_home = pokemon_display(f, True).replace("`", "'") # wholeCollection
+    html_home = pokemon_display(True).replace("`", "'") # wholeCollection
 
     print("Making new Pokemon rendering")
 

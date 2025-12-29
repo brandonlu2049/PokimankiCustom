@@ -7,7 +7,7 @@ from aqt.utils import openLink
 
 
 def show_more_info():
-        from .popup.popup_config import PATRONS_LIST, NEW_FEATURE, OLD_CHANGE_LOG
+        from .popup.popup_config import NEW_FEATURE, OLD_CHANGE_LOG
 
         change_log_text =  NEW_FEATURE.replace('\n', '<br>')
         change_log_text +=  OLD_CHANGE_LOG.replace('\n', '<br>')
@@ -57,11 +57,12 @@ def show_more_info():
 
         # GITHUB_URL = "https://github.com/shigeyukey/Pokemanki-Gold/issues"
         # github_button = QPushButton("🐈️Github")
-        # github_button.clicked.connect(lambda : openLink(GITHUB_URL))
+        # github_button.clicked.connect(la
+        # mbda : openLink(GITHUB_URL))
         # customBtns.append(github_button)
 
         close_button = QPushButton("Close")
         customBtns.append(close_button)
 
 
-        MoreInfoDialog(text=MORE_INFO_TEXT, parent=mw, title="Pokemanki Custom", type="shige",textFormat="rich",customBtns=customBtns)
+        MoreInfoDialog(text=MORE_INFO_TEXT, parent=mw, title="Pokemanki Go", type="shige",textFormat="rich",customBtns=customBtns)

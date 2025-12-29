@@ -34,7 +34,7 @@ from .custom_py.set_js_message import *
 from .custom_py.count_time import shigeTaskTimer
 
 
-def pokemon_display(assignment_mode: str, wholecollection: bool = True) -> str:
+def pokemon_display(wholecollection: bool = True) -> str:
     """
     Control the generation of the html code to display.
 
@@ -44,30 +44,20 @@ def pokemon_display(assignment_mode: str, wholecollection: bool = True) -> str:
     :rtype: str
     """
 
-    # Get list of Pokémon from tags or decks.
-    #   For decks, if wholeCollection, get all assigned Pokémon and assign to Pokémon,
-    #   else, show Pokémon for either single deck or all subdecks and store in Pokémon
-    if assignment_mode == "tags":
-        pokemon = TagPokemon()
-    elif assignment_mode == "decks":
-        pokemon = MultiPokemon(wholecollection)
-    else:
-        pokemon = ProfilePokemon()
+    pokemon = ProfilePokemon()
 
     if pokemon is not None:
         pokemon = pokemon[:999]
 
-    result = _show(pokemon, assignment_mode)
+    result = _show(pokemon)
     return result
 
 def _show(
     data: Union[List[dict], None],
-    assignment_mode: str,
 ) -> str:
     """
     Generate the html to inject into the new stats window.
     :param List|None data: Pokémon information.
-    :param str assignment_mode: The mode of assignment.
     :return: The html code to display.
     :rtype: str
     """
@@ -132,13 +122,8 @@ def _show(
             f'<a href="{ANKI_WEB_URL}" style="color: inherit; text-decoration: none;">Choose a Pokémon to bring with you!</a></div>')
 
 
-    # If single Pokémon, show centered card
-    display_deck_or_tag_name = assignment_mode != "profile"
-    if type(data) == dict:
-        txt += '<div class="pk-st-single">'
-        txt += _card_html(data, False, display_deck_or_tag_name)
     # If multiple Pokémon, show flex row of cards
-    elif type(data) == list:
+    if type(data) == list:
         if len(data) == 1:
             txt += '<div class="pk-st-single">'
             multi = False
@@ -167,7 +152,6 @@ def _show(
             txt += _card_html(
                 pokemon,
                 multi,
-                display_deck_or_tag_name
             )
         shigeTaskTimer.end("sortedData")
 
@@ -184,14 +168,12 @@ def _show(
 def _card_html(
     pokemon: dict,
     multi: bool = False,
-    display_deck_or_tag_name: bool = True,
 ) -> str:
     """
     Generate the html text for a Pokémon card.
 
     :param dict pokemon: The pokemon data.
     :param bool multi: True if multiple Pokémon are being rendered.
-    :param bool display_deck_or_tag_name: True if the deck or tag name should be displayed.
     :return: The card html.
     :rtype: str
     """
@@ -242,29 +224,14 @@ def _card_html(
         rarity_string = "Rarity: " + rarity
         card += f'<span style="color:{RARITY_COLOR_MAP[rarity]};margin-top: 3px;">{rarity_string}</span>'
 
-
-    if display_deck_or_tag_name:
-        # Level
-        card += (
-            f"<span style='font-size: {font_size};'><i>{'<br>'.join(deck_or_tag_name.split('::')[split_index:])}</i></span>"
-            "</div>"
-            '<div class="pk-st-card-lvl">'
-            '<span style="text-align: right;">Lvl</span>'
-            '<span style="text-align: right;">'
-            f'<b>{int(level-50) if _in_list("prestige", source) else int(level)}</b>'
-            "</span>"
-            "</div>"
-            "</div>"
-        )
-    else:
-        card += (
-            "</div>" 
-            '<div class="pk-st-card-lvl" style="margin-left: 0; align-self: center; text-align: center;">'
-            '<span>Lvl ' 
-            f'{int(level-50) if _in_list("prestige", source) else int(level)}</span>'
-            "</div>"
-            "</div>"
-        )
+    card += (
+        "</div>" 
+        '<div class="pk-st-card-lvl" style="margin-left: 0; align-self: center; text-align: center;">'
+        '<span>Lvl ' 
+        f'{int(level-50) if _in_list("prestige", source) else int(level)}</span>'
+        "</div>"
+        "</div>"
+    )
 
     # Divider and end of top info
     card += '<div class="pk-st-divider" style="margin-top: 10px;"></div>' "</div>"

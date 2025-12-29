@@ -192,95 +192,36 @@ def get_pokemon_icon_and_level(card):
     else:
         poke_type = pkmnimgfolder_B
 
-    decks_or_tags = pokemon_data["decks_or_tags"]
-
     name, level = None, None
     nickname = None
     deck_or_tag_name = None
 
-    # handle case where pokemon are assigned to tags
-    if decks_or_tags == "tags" and card is not None:
-        pokemons = pokemon_data["tagmon_list"]
-        # print(f"pokemons: {pokemons}")
-        note = card.note()
-        note_tags = note.tags
-        # print(f"note.tags: {note_tags}")
-
-        matched_pokemons = []
-
-        for tagname in note_tags:
-            tag_parts = tagname.split("::")
-            for pokemon in pokemons:
-                if pokemon.get("deck"):
-                    pokemon_tag_parts = pokemon["deck"].split("::")
-                    if tag_parts[:len(pokemon_tag_parts)] == pokemon_tag_parts:
-
-                        if pokemon not in matched_pokemons:
-                            matched_pokemons.append(pokemon)
-
-        # :: の数が最も多いﾀｸﾞのﾎﾟｹﾓﾝをﾌｨﾙﾀﾘﾝｸﾞ
-        if matched_pokemons:
-
-            max_colons = 0
-            for pokemon in matched_pokemons:
-                colon_count = pokemon["deck"].count("::") 
-                if colon_count > max_colons:
-                    max_colons = colon_count
-
-            filtered_pokemons = []
-            for p in matched_pokemons:
-                if p["deck"].count("::") == max_colons:
-                    filtered_pokemons.append(p)
-
-            set_pokemon = random.choice(filtered_pokemons)
-            name, level = set_pokemon["name"], set_pokemon["level"]
-
-            nickname = set_pokemon["nickname"]
-
-            deck_or_tag_name = set_pokemon["deck"]
-
-
-    # handle case where pokemon are assigned to decks
-    elif decks_or_tags == "decks" and card is not None:
-        pokemons = pokemon_data["pokemon_list"]
-        deck_id = card.did
-        for pokemon in pokemons:
-            if pokemon["deck"] == deck_id:
-                name, level = pokemon["name"], pokemon["level"]
-                nickname = pokemon["nickname"]
-                # deck_or_tag_name = pokemon["deck"]
-                if isinstance(pokemon["deck"], int):
-                    deck_or_tag_name = mw.col.decks.name(pokemon["deck"])
-                break
-    # handle case where pokemon are assigned to profile
+    current_pokemon_id = pokemon_data.get("current_pokemon_id")
+    current_pokemon = get_pokemon_by_id(current_pokemon_id)
+    
+    # Handle case where current_pokemon_id points to a removed Pokemon
+    if current_pokemon is None:
+        # Try to set a new current pokemon from the list
+        pokemon_list = pokemon_data.get("pokemon_list", [])
+        if pokemon_list:
+            # Find the first non-egg Pokemon, or fall back to any Pokemon
+            for p in pokemon_list:
+                if p and p.get("name") != "Egg":
+                    current_pokemon = p
+                    break
+            if current_pokemon is None and pokemon_list:
+                current_pokemon = pokemon_list[0]
+            
+            if current_pokemon:
+                # Update the current_pokemon_id
+                from .config import save_synced_conf
+                save_synced_conf("current_pokemon_id", current_pokemon.get("id"))
+    
+    if current_pokemon:
+        name, level, nickname = current_pokemon["name"], current_pokemon["level"], current_pokemon["nickname"]
     else:
-
-        current_pokemon_id = pokemon_data.get("current_pokemon_id")
-        current_pokemon = get_pokemon_by_id(current_pokemon_id)
-        
-        # Handle case where current_pokemon_id points to a removed Pokemon
-        if current_pokemon is None:
-            # Try to set a new current pokemon from the list
-            pokemon_list = pokemon_data.get("pokemon_list", [])
-            if pokemon_list:
-                # Find the first non-egg Pokemon, or fall back to any Pokemon
-                for p in pokemon_list:
-                    if p and p.get("name") != "Egg":
-                        current_pokemon = p
-                        break
-                if current_pokemon is None and pokemon_list:
-                    current_pokemon = pokemon_list[0]
-                
-                if current_pokemon:
-                    # Update the current_pokemon_id
-                    from .config import save_synced_conf
-                    save_synced_conf("current_pokemon_id", current_pokemon.get("id"))
-        
-        if current_pokemon:
-            name, level, nickname = current_pokemon["name"], current_pokemon["level"], current_pokemon["nickname"]
-        else:
-            # No Pokemon available at all
-            name, level, nickname = None, 0, None
+        # No Pokemon available at all
+        name, level, nickname = None, 0, None
 
     print(f"poke : {name} : {level} : {nickname} : {deck_or_tag_name}")
 
@@ -343,20 +284,18 @@ def pokemon_show_answer(card, *args, **kwargs):
 
     synced_config_data = get_synced_conf()
 
-    # add LEVEL_INCREMENT_AMOUNT to current active pokemon level
-    if synced_config_data["decks_or_tags"] == "profile":
-        current_pokemon_id = synced_config_data["current_pokemon_id"]
-        current_pokemon = get_pokemon_by_id(current_pokemon_id)
-        add_xp_to_pokemon(current_pokemon, LEVEL_INCREMENT_AMOUNT)
+    current_pokemon_id = synced_config_data["current_pokemon_id"]
+    current_pokemon = get_pokemon_by_id(current_pokemon_id)
+    add_xp_to_pokemon(current_pokemon, LEVEL_INCREMENT_AMOUNT)
 
-        if "cards_this_session" not in synced_config_data:
-            synced_config_data["cards_this_session"] = 0
-        save_synced_conf("cards_this_session", synced_config_data["cards_this_session"] + 1)
+    if "cards_this_session" not in synced_config_data:
+        synced_config_data["cards_this_session"] = 0
+    save_synced_conf("cards_this_session", synced_config_data["cards_this_session"] + 1)
+
+    if "egg_counter" not in synced_config_data:
+        synced_config_data["egg_counter"] = 0
+    save_synced_conf("egg_counter", synced_config_data["egg_counter"] + 1)
     
-        if "egg_counter" not in synced_config_data:
-            synced_config_data["egg_counter"] = 0
-        save_synced_conf("egg_counter", synced_config_data["egg_counter"] + 1)
-        
     if config.get("show_pokemon_in_reviewer",True):
         get_pokemon_icon_and_level(card)
     else:

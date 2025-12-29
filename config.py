@@ -62,7 +62,6 @@ def save_synced_conf(key: str, value: Any) -> None:
 def setup_default_synced_conf() -> None:
     default = {
         "alolanlist": [],
-        "decks_or_tags": "profile",
         "everstonelist": [],
         "everstonepokemonlist": [],
         "evolution_thresholds": {

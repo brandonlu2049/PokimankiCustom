@@ -24,7 +24,6 @@ from .config import (
     save_synced_conf,
     setup_default_synced_conf,
 )
-from .tags import Tags
 from .utils import *
 from .custom_py.path_manager import (CustomWidget as QWidget,
                                     CustomMessageBox as QMessageBox,
@@ -127,37 +126,6 @@ def nickname() -> None:
         save_synced_conf("tagmon_list", modifieddeckmonlist)
     else:
         save_synced_conf("pokemon_list", modifieddeckmonlist)
-
-
-def Toggle() -> None:
-    window = QWidget()
-    items = ("Profile (Default)", "Decks", "Tags")
-    by = get_synced_conf()["decks_or_tags"]
-    default = 0
-    if by == "tags":
-        default = 1
-    inp, ok = QInputDialog.getItem(
-        window,
-        "Pokémanki",
-        "Choose how you would like Pokémanki to assign you Pokémon.",
-        items,
-        default,
-        False,
-    )
-    if ok and inp:
-        if inp == "Tags":
-            save_synced_conf("decks_or_tags", "tags")
-            tags = Tags()
-            tags.tagMenu()
-        elif inp == "Decks":
-            save_synced_conf("decks_or_tags", "decks")
-        else:
-            save_synced_conf("decks_or_tags", "profile")
-
-        from .hooks.menu import build_menu
-
-        build_menu()
-
 
 # Threshold Settings
 

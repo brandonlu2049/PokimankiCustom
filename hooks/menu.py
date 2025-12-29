@@ -13,7 +13,6 @@ from aqt.qt import QAction, QMenu, qconnect
 
 from ..config import get_synced_conf
 from ..pokemon import *
-from ..tags import run_tags_window
 from ..trades import Trades
 from ..egg_exchange import EggExchange
 from ..custom_py.more_info import show_more_info
@@ -39,7 +38,6 @@ def build_menu() -> None:
     resetaction = QAction("&Reset", mw)
     tradeaction = QAction("&Trade", mw)
     eggexchangeaction = QAction("&Egg Exchange", mw)
-    toggleaction = QAction("&Decks vs. Tags", mw)
     tagsaction = QAction("&Tags", mw)
     prestigeaction = QAction("&Prestige Pokémon", mw)
     unprestigeaction = QAction("&Unprestige Pokémon", mw)
@@ -64,8 +62,6 @@ def build_menu() -> None:
     qconnect(resetaction.triggered, reset_pokemanki)
     qconnect(tradeaction.triggered, tradeclass.open)
     qconnect(eggexchangeaction.triggered, eggexchangeclass.open)
-    qconnect(toggleaction.triggered, Toggle)
-    qconnect(tagsaction.triggered, run_tags_window)
     qconnect(prestigeaction.triggered, PrestigePokemon)
     qconnect(unprestigeaction.triggered, UnprestigePokemon)
     qconnect(everstoneaction.triggered, giveEverstone)
@@ -80,41 +76,32 @@ def build_menu() -> None:
 
     mw.pokemenu.clear()
 
-    mw.form.menuTools.addMenu(mw.pokemenu)
-    mw.pokemenu.addAction(toggleaction)
-    mw.pokemenu.addAction(nicknameaction)
-    mw.prestigemenu = QMenu("&Prestige Menu", mw)
-    mw.pokemenu.addMenu(mw.prestigemenu)
-    mw.prestigemenu.addAction(prestigeaction)
-    mw.prestigemenu.addAction(unprestigeaction)
+    # Disable these actions for now since they're broken
+    # TODO: Fix these actions
+    
+    # mw.form.menuTools.addMenu(mw.pokemenu)
+    # mw.pokemenu.addAction(nicknameaction)
+    # mw.prestigemenu = QMenu("&Prestige Menu", mw)
+    # mw.pokemenu.addMenu(mw.prestigemenu)
+    # mw.prestigemenu.addAction(prestigeaction)
+    # mw.prestigemenu.addAction(unprestigeaction)
 
-    f = get_synced_conf()["decks_or_tags"]
-    if f == "tags":
-        mw.pokemenu.addAction(tagsaction)
-    else:  # Not yet implemented for tagmon
-        mw.everstonemenu = QMenu("&Everstone", mw)
-        mw.pokemenu.addMenu(mw.everstonemenu)
-        mw.everstonemenu.addAction(everstoneaction)
-        mw.everstonemenu.addAction(uneverstoneaction)
-        mw.megastonemenu = QMenu("&Mega Stone", mw)
-        mw.pokemenu.addMenu(mw.megastonemenu)
-        mw.megastonemenu.addAction(megastoneaction)
-        mw.megastonemenu.addAction(unmegastoneaction)
-        mw.alolanmenu = QMenu("&Alolan Passport", mw)
-        mw.pokemenu.addMenu(mw.alolanmenu)
-        mw.alolanmenu.addAction(alolanaction)
-        mw.alolanmenu.addAction(unalolanaction)
+    # mw.everstonemenu = QMenu("&Everstone", mw)
+    # mw.pokemenu.addMenu(mw.everstonemenu)
+    # mw.everstonemenu.addAction(everstoneaction)
+    # mw.everstonemenu.addAction(uneverstoneaction)
+    # mw.megastonemenu = QMenu("&Mega Stone", mw)
+    # mw.pokemenu.addMenu(mw.megastonemenu)
+    # mw.megastonemenu.addAction(megastoneaction)
+    # mw.megastonemenu.addAction(unmegastoneaction)
+    # mw.alolanmenu = QMenu("&Alolan Passport", mw)
+    # mw.pokemenu.addMenu(mw.alolanmenu)
+    # mw.alolanmenu.addAction(alolanaction)
+    # mw.alolanmenu.addAction(unalolanaction)
 
     # Add trade and egg exchange actions
     mw.pokemenu.addAction(tradeaction)
     mw.pokemenu.addAction(eggexchangeaction)
     mw.pokemenu.addAction(resetaction)
     mw.pokemenu.addAction(aAbout)
-
-    # Debug menu items
-    config = mw.addonManager.getConfig(__name__)
-    if config.get("is_enable_debug_mode", False):
-        from ..show_test_tags import test_tag_matching
-        testaction = QAction("Test Tag Matching", mw)
-        qconnect(testaction.triggered, test_tag_matching)
-        mw.pokemenu.addAction(testaction)
+        
