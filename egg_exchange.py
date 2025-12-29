@@ -18,7 +18,6 @@
 
 import inspect
 import os
-import uuid
 from typing import Optional
 
 from aqt import mw
@@ -30,7 +29,7 @@ from .custom_py.path_manager import (
     CustomMessageBox as QMessageBox,
     InfoDialog as showInfo
 )
-from .pokemon_helpers import get_pokemon_by_id, remove_pokemon_by_id, generate_by_rarity
+from .pokemon_helpers import get_pokemon_by_id, remove_pokemon_by_id, create_pokemon
 
 # Rarity levels in order from lowest to highest
 RARITY_ORDER = ["F", "E", "D", "C", "B", "A", "S"]
@@ -178,14 +177,7 @@ class EggExchange:
                 remove_pokemon_by_id(egg["id"])
 
             # Create a new egg with higher rarity
-            new_egg = {
-                "id": str(uuid.uuid4()),
-                "name": "Egg",
-                "deck": -1,
-                "level": 1,
-                "rarity": next_rarity,
-                "nickname": None
-            }
+            new_egg = create_pokemon(name="Egg", level=1, rarity=next_rarity, nickname=None)
 
             # Add the new egg to the list
             synced_conf = get_synced_conf()  # Refresh after removal
@@ -263,14 +255,7 @@ class EggExchange:
                 remove_pokemon_by_id(egg["id"])
 
             # Create a new egg with higher rarity
-            new_egg = {
-                "id": str(uuid.uuid4()),
-                "name": "Egg",
-                "deck": -1,
-                "level": 1,
-                "rarity": next_rarity,
-                "nickname": None
-            }
+            new_egg = create_pokemon(name="Egg", level=1, rarity=next_rarity, nickname=None)
 
             # Add the new egg to the list
             synced_conf = get_synced_conf()  # Refresh after removal

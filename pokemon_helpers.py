@@ -2,6 +2,7 @@
 
 import random
 import re
+import uuid
 from anki.cards import Card
 from aqt import mw, gui_hooks
 from typing import Any, Dict
@@ -56,6 +57,22 @@ RARITY_COLOR_MAP = {
 
 # Global cache for pokemon evolution mapping
 _pokemon_evolution_mapping = None
+
+# Centralized function to create a pokemon dictionary. Always use this function to create a pokemon.
+# Arguments:
+# - name: str - The name of the pokemon
+# - level: float - The level of the pokemon
+# - rarity: str - The rarity of the pokemon
+# - nickname: str = None - The nickname of the pokemon
+# Returns: dict - The pokemon dictionary
+def create_pokemon(name: str, level: float, rarity: str, nickname: str = None) -> dict:
+    return {
+        "id": str(uuid.uuid4()),
+        "name": name,
+        "level": level,
+        "rarity": rarity,
+        "nickname": nickname
+    }
 
 def get_all_pokemon_tiered():
     pokemonlist = []

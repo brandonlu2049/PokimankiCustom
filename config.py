@@ -72,8 +72,6 @@ def setup_default_synced_conf() -> None:
         "current_pokemon_id": None,
         "pokemon_list": [],
         "prestigelist": [],
-        "tagmon_list": [],
-        "tags": [],
         "trades": [],
         "cards_this_session": 0,
         "card_counter": 0,

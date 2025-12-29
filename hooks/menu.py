@@ -38,7 +38,6 @@ def build_menu() -> None:
     resetaction = QAction("&Reset", mw)
     tradeaction = QAction("&Trade", mw)
     eggexchangeaction = QAction("&Egg Exchange", mw)
-    tagsaction = QAction("&Tags", mw)
     prestigeaction = QAction("&Prestige Pokémon", mw)
     unprestigeaction = QAction("&Unprestige Pokémon", mw)
 
@@ -78,7 +77,7 @@ def build_menu() -> None:
 
     # Disable these actions for now since they're broken
     # TODO: Fix these actions
-    
+
     # mw.form.menuTools.addMenu(mw.pokemenu)
     # mw.pokemenu.addAction(nicknameaction)
     # mw.prestigemenu = QMenu("&Prestige Menu", mw)

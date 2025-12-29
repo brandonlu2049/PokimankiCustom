@@ -19,14 +19,13 @@
 import bisect
 import os
 import random
-import uuid
 from datetime import datetime, timedelta
 
 from aqt import mw
 from aqt.webview import AnkiWebView
 
 from ..config import get_synced_conf, save_synced_conf
-from ..pokemon_helpers import get_pokemon_by_id, set_pokemon_by_id, add_xp_to_pokemon
+from ..pokemon_helpers import get_pokemon_by_id, set_pokemon_by_id, add_xp_to_pokemon, create_pokemon
 
 # Constants
 LEVEL_INCREMENT_AMOUNT_COMPLETION = 0.05
@@ -64,14 +63,7 @@ def pokemon_finish_session(*args, **kwargs):
         for _ in range(eggs_earned):
             rarity_level = random.randint(0, 100)
             rarity = rarities[bisect.bisect_left(thresholds, rarity_level)]
-            synced_config_data["pokemon_list"].append({
-                "id": str(uuid.uuid4()),
-                "name": "Egg",
-                "deck": -1,
-                "level": 1,
-                "rarity": rarity,
-                "nickname": None
-            })
+            synced_config_data["pokemon_list"].append(create_pokemon(name="Egg", level=1, rarity=rarity, nickname=None))
         save_synced_conf("pokemon_list", synced_config_data["pokemon_list"])
 
         # Calculate trade refresh counter

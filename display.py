@@ -24,7 +24,7 @@ from typing import List, Tuple, Union
 
 from aqt import mw
 
-from .compute import MultiPokemon, TagPokemon, ProfilePokemon
+from .compute import ProfilePokemon
 from .pokemon_helpers import RARITY_COLOR_MAP
 from .config import get_local_conf
 from .utils import *
@@ -38,7 +38,6 @@ def pokemon_display(wholecollection: bool = True) -> str:
     """
     Control the generation of the html code to display.
 
-    :param bool istagmon: True to switch to use tag's display, False for deck.
     :param bool wholecollection: True if multiple Pokémon, false if single.
     :return: The html text to display.
     :rtype: str

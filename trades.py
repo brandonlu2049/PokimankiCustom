@@ -20,7 +20,6 @@ import inspect
 import bisect
 import os
 import random
-import uuid
 from datetime import date as dt
 
 from typing import List, Optional, Tuple, Union
@@ -34,7 +33,7 @@ from .custom_py.path_manager import (CustomWidget as QWidget,
                                     CustomDialog as QDialog,
                                     InfoDialog as showInfo)
 
-from .pokemon_helpers import generate_by_rarity, get_pokemon_by_id, remove_pokemon_by_id
+from .pokemon_helpers import generate_by_rarity, get_pokemon_by_id, remove_pokemon_by_id, create_pokemon
 
 TRADES_PER_DAY = 3
 
@@ -116,14 +115,7 @@ class Trades:
         for _ in range(TRADES_PER_DAY):
             rarity_level = random.randint(0, 100)
             rarity = rarities[bisect.bisect_left(thresholds, rarity_level)]
-            tradePokemonList.append({
-                "id": str(uuid.uuid4()),
-                "name": "Egg",
-                "deck": -1,
-                "level": 1,
-                "rarity": rarity,
-                "nickname": None
-            })
+            tradePokemonList.append(create_pokemon(name="Egg", level=1, rarity=rarity, nickname=None))
         tradePokemonList = generate_by_rarity(tradePokemonList)
         # Make all S-rank Pokemon into Eggs
         for pokemon in tradePokemonList:
