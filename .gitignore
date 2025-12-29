@@ -6,3 +6,8 @@ __pycache__
 *.jpg
 /user_files/
 *.ankiaddon
+
+# Always include media folder
+!/media/
+/media/*
+!/media/**
