@@ -267,7 +267,14 @@ def FirstProfilePokemon() -> None:
     migrate_pokemon_data()
 
     synced_config_data = get_synced_conf()
-    pokemon_list = synced_config_data["pokemon_list"]
+    
+    # Handle case where synced config doesn't exist or is missing keys
+    if synced_config_data is None:
+        from .config import setup_default_synced_conf
+        setup_default_synced_conf()
+        synced_config_data = get_synced_conf()
+    
+    pokemon_list = synced_config_data.get("pokemon_list", [])
 
     if not pokemon_list or len(pokemon_list) == 0:
         # Choose a starter Pokemon
@@ -294,7 +301,7 @@ def FirstProfilePokemon() -> None:
         save_synced_conf("pokemon_list", pokemon_list)
         print("Added starter pokemon to profile Pokemon list: ", starter_pokemon_name)
 
-    if (not get_synced_conf()["current_pokemon_id"]):
+    if not get_synced_conf().get("current_pokemon_id") and pokemon_list:
         save_synced_conf("current_pokemon_id", pokemon_list[0]["id"])
 
     return
@@ -317,7 +324,12 @@ def create_pokemon(name: str, level: float, rarity: str, nickname: str = None) -
         "name": name,
         "level": level,
         "rarity": rarity,
-        "nickname": nickname
+        "nickname": nickname,
+        "items": {
+            "everstone": False,
+            "megastone": False,
+            "alolan": False,
+        },
     }
 
 

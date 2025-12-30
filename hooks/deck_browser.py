@@ -19,6 +19,9 @@ from ..gui.pokemanki_display import pokemon_display
 from ..utils import addon_dir
 from ..helpers.pokemon_helpers import get_pokemon_icon_and_level
 
+# In-memory flag to prevent re-entrant calls during rendering
+_is_rendering = False
+
 
 def replace_gears(deck_browser: DeckBrowser, content: DeckBrowserContent) -> None:
     """Replace gear icon with Pokemon-themed gear."""
@@ -33,6 +36,11 @@ def replace_gears(deck_browser: DeckBrowser, content: DeckBrowserContent) -> Non
 
 def deck_browser_open(deck_browser: "DeckBrowser", content: "DeckBrowserContent") -> None:
     """Handle deck browser opening and add Pokemon display."""
+    global _is_rendering
+
+    # Prevent re-entrant calls during rendering
+    if _is_rendering:
+        return
 
     try:
         config = mw.addonManager.getConfig(__name__)
@@ -44,15 +52,12 @@ def deck_browser_open(deck_browser: "DeckBrowser", content: "DeckBrowserContent"
     js = (addon_dir / "web.js").read_text(encoding="utf-8")
     css = (addon_dir / "pokemanki_css" / "view_stats.css").read_text(encoding="utf-8")
 
-    config["show_pokemon_in_home_and_overview"] = False # Avoid Freeze
-    mw.addonManager.writeConfig(__name__, config)
-
-    html_home = pokemon_display(True).replace("`", "'") # wholeCollection
-
-    print("Making new Pokemon rendering")
-
-    config["show_pokemon_in_home_and_overview"] = True # Avoid Freeze
-    mw.addonManager.writeConfig(__name__, config)
+    _is_rendering = True  # Use in-memory flag instead of config
+    try:
+        html_home = pokemon_display(True).replace("`", "'") # wholeCollection
+        print("Making new Pokemon rendering")
+    finally:
+        _is_rendering = False  # Always reset, even if an exception occurs
 
     config = mw.addonManager.getConfig(__name__)
 

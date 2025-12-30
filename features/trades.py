@@ -50,12 +50,21 @@ class Trades:
     def open(self) -> None:
         """Open the Trade window"""
 
-        # Check if current pokemon is an egg - can't trade eggs
+        # Check if current pokemon exists
         synced_config_data = get_synced_conf()
         current_pokemon_id = synced_config_data.get("current_pokemon_id")
-        current_pokemon = get_pokemon_by_id(current_pokemon_id)
+        current_pokemon = get_pokemon_by_id(current_pokemon_id) if current_pokemon_id else None
         
-        if current_pokemon and current_pokemon.get("name") == "Egg":
+        if not current_pokemon:
+            msg = QMessageBox()
+            msg.setWindowTitle("Pokémanki")
+            msg.setText("You don't have a current Pokémon to trade. Please select a Pokémon first!")
+            msg.setStandardButtons(QMessageBox.StandardButton.Ok)
+            msg.exec()
+            return
+        
+        # Check if current pokemon is an egg - can't trade eggs
+        if current_pokemon.get("name") == "Egg":
             msg = QMessageBox()
             msg.setWindowTitle("Pokémanki")
             msg.setText("You cannot trade while your current Pokémon is an Egg. Wait for it to hatch first!")

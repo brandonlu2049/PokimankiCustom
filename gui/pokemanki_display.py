@@ -17,17 +17,16 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import os
-import shutil
 import random
+import uuid
 
-from typing import List, Tuple, Union
+from typing import List, Union
 
 from aqt import mw
 
-from ..helpers.pokemon_helpers import ProfilePokemon, RARITY_COLOR_MAP
+from ..helpers.pokemon_helpers import ProfilePokemon, RARITY_COLOR_MAP, HATCH_EGG_LEVEL, set_pokemon_by_id
 from ..helpers.config import get_local_conf
 from ..utils import *
-from aqt.utils import tooltip
 
 from ..custom_py.set_js_message import *
 from ..custom_py.count_time import shigeTaskTimer
@@ -44,8 +43,40 @@ def pokemon_display(wholecollection: bool = True) -> str:
 
     pokemon = ProfilePokemon()
 
-    if pokemon is not None:
-        pokemon = pokemon[:999]
+    pokemon.append({
+        "id": str(uuid.uuid4()),
+        "name": "Charizard",
+        "level": 50,
+        "rarity": "A",
+        "nickname": None,
+        "items": {
+            "everstone": False,
+            "megastone": True,
+        },
+    })
+    pokemon.append({
+        "id": str(uuid.uuid4()),
+        "name": "Mewtwo",
+        "level": 50,
+        "rarity": "S",
+        "nickname": None,
+        "items": {
+            "everstone": False,
+            "megastone": True,
+        },
+    })
+    pokemon.append({
+        "id": str(uuid.uuid4()),
+        "name": "Diglett",
+        "level": 50,
+        "rarity": "A",
+        "nickname": None,
+        "items": {
+            "everstone": False,
+            "megastone": False,
+            "alolan": True,
+        },
+    })
 
     result = _show(pokemon)
     return result
@@ -172,11 +203,18 @@ def _card_html(
     :rtype: str
     """
 
-    print(f"pokemon: {pokemon}")
+    if "items" not in pokemon:
+        pokemon["items"] = {
+            "everstone": False,
+            "megastone": False,
+        }
+
     # Get pokemon data
     name = pokemon["name"]
-    # TODO: Remove this when items are fixed
-    source = pokemon.get("deck", -1)
+    if pokemon["items"]["megastone"]:
+        name = "Mega " + name
+        if pokemon["name"] == "Charizard" or pokemon["name"] == "Mewtwo":
+            name += " " + get_local_conf()["X_or_Y_mega_evolutions"]
     level = pokemon["level"]
     nickname = pokemon["nickname"]
     id = pokemon["id"]
@@ -240,9 +278,9 @@ def _card_html(
     pokemon_sound_name = re.sub(r"'", '_', name)  # for Farfetchd
     
     if config[POKE_TYPE]:
-        card += f'<img style="cursor: pointer;" src="{pkmnimgfolder}/{_image_name(name, source)}.webp" class="pk-st-card-img" onclick="Pokemanki.bounce(this); pycmd(\'shige_pokemon_sound:{pokemon_sound_name}\');"/>'
+        card += f'<img style="cursor: pointer;" src="{pkmnimgfolder}/{_image_name(pokemon)}.webp" class="pk-st-card-img" onclick="Pokemanki.bounce(this); pycmd(\'shige_pokemon_sound:{pokemon_sound_name}\');"/>'
     else:
-        card += f'<img style="cursor: pointer;" src="{pkmnimgfolder_B}/{_image_name(name, source)}.webp" class="pk-st-card-img" onclick="Pokemanki.bounce(this); pycmd(\'shige_pokemon_sound:{pokemon_sound_name}\');"/>'
+        card += f'<img style="cursor: pointer;" src="{pkmnimgfolder_B}/{_image_name(pokemon)}.webp" class="pk-st-card-img" onclick="Pokemanki.bounce(this); pycmd(\'shige_pokemon_sound:{pokemon_sound_name}\');"/>'
 
 
 
@@ -254,16 +292,20 @@ def _card_html(
         '<div class="pk-st-divider" style="margin-bottom: 10px;"></div>'
     )
     # Held/SP
-    held = _held_html(source)
+    held = _held_html(pokemon)
     if held != "":
         card += '<div class="pk-st-card-sp">' "<span><b>SP: </b></span>"
         card += held
         card += "</div>"
     # Progress bar
     if name == "Egg":
-        card += f'<span class="pk-st-card-xp">{_egg_hatch_text(level)}</span>'
+        card += f'<span class="pk-st-card-xp">{_egg_hatch_text(level, pokemon.get("rarity", "F"))}</span>'
     else:
         card += f'<img src="/_addons/{addon_package}/progress_bars/{_calculate_xp_progress(level)}.webp" class="pk-st-card-xp"/>'
+    
+    # Customize button
+    card += f'<button class="pk-st-customize-btn" onclick="event.stopPropagation(); pycmd(\'customize_pokemon:{id}\')" style="margin-top: 8px; padding: 4px 12px; font-size: 11px; cursor: pointer; border-radius: 4px; border: 1px solid #ccc; background: linear-gradient(to bottom, #f8f8f8, #e8e8e8); color: #333;">Customize</button>'
+    
     card += "</div>"
 
     # End card
@@ -275,72 +317,32 @@ def _card_html(
 
     return card
 
-
-def _get_source_name(item: Union[int, str]) -> str:
-    """
-    Get the name of the tag or deck based on the input item.
-
-    :param int item: Element to find the source of
-    :return: The name of the deck
-    """
-
-    if not item:
-        return ""
-
-    if isinstance(item, int):
-        return mw.col.decks.name(item)
-    else:
-        return item
-
-
-def _in_list(listname: str, item: str) -> bool:
-    """
-    Check if an item is in a list.
-
-    :param str listname: Name of the list to check in.
-    :param str item: Item to find in the list
-    :return: True if the list exists and the item is in it, otherwise false.
-    :rtype: bool
-    """
-
-    if listname not in ["prestige", "everstone", "megastone", "alolan"]:
-        return False
-
-    return item in get_synced_conf()[f"{listname}list"]
-
-
-def _image_name(name: str, source: Union[int, str]) -> str:
+def _image_name(pokemon) -> str:
     """
     Get the image name based on the Pokémon's name and any special attributes.
 
     :param str name: Pokémon's name.
-    :param int|str source: Id of the deck or tag name the Pokémon belongs to.
     :return: The image name to be used to retrieve it.
     :rtype: str
     """
 
     pkmnimgfolder = addon_dir / "pokemon_images"
 
-    fullname = name
-    if _in_list("everstone", source):
-        # FIX: name is never declared!u
-        if name == "Pikachu":
-            # fullname += "_Ash" + str(random.randint(1, 5))
+    fullname = pokemon["name"]
+    if pokemon["items"]["everstone"]:
+        if pokemon["name"] == "Pikachu":
             if random.randint(1, 5) != 1:  # 4 in 5 chance
                 fullname += "_Ash" + str(random.randint(1, 4)) # added
-    if _in_list("megastone", source):
-        if any([name + "_Mega" in imgname for imgname in os.listdir(pkmnimgfolder)]):
+    if pokemon["items"]["megastone"]:
+        if any([pokemon["name"] + "_Mega" in imgname for imgname in os.listdir(pkmnimgfolder)]):
             fullname += "_Mega"
-            if name == "Charizard" or name == "Mewtwo":
+            if pokemon["name"] == "Charizard" or pokemon["name"] == "Mewtwo":
                 fullname += get_local_conf()["X_or_Y_mega_evolutions"]
-    if _in_list("alolan", source):
-        if any([name + "_Alolan" in imgname for imgname in os.listdir(pkmnimgfolder)]):
-            fullname += "_Alolan"
 
     return fullname
 
 
-def _egg_hatch_text(level: float) -> str:
+def _egg_hatch_text(level: float, rarity: str) -> str:
     """
     Get the egg's hatch text.
 
@@ -348,11 +350,13 @@ def _egg_hatch_text(level: float) -> str:
     :return: The hatch text.
     :rtype: str
     """
-    if level < 2:
+    hatch_level = HATCH_EGG_LEVEL[rarity]
+    hatch_interval = hatch_level / 4
+    if level < hatch_interval:
         return "Needs a lot more time to hatch"
-    elif level < 3:
+    elif level < 2 * hatch_interval:
         return "Will take some time to hatch"
-    elif level < 4:
+    elif level < 3 * hatch_interval:
         return "Moves around inside sometimes"
     else:
         return "Making sounds inside"
@@ -369,7 +373,7 @@ def _calculate_xp_progress(level: float) -> int:
     return int(float(20 * (float(level) - int(float(level)))))
 
 
-def _held_html(source: Union[int, str]) -> str:
+def _held_html(pokemon) -> str:
     """
     Generate the held html code for the given Pokémon.
 
@@ -381,15 +385,10 @@ def _held_html(source: Union[int, str]) -> str:
     held = ""
     everstone_html = f'<img src="{pkmnimgfolder}/item_Everstone.webp" height="20px"/>'
     megastone_html = f'<img src="{pkmnimgfolder}/item_Mega_Stone.webp" height="25px"/>'
-    alolan_html = f'<img src="{pkmnimgfolder}/item_Alolan_Passport.webp" height="25px"/>'
 
-    if _in_list("prestige", source):
-        held += "<span>Prestiged </span>"
-    if _in_list("everstone", source):
+    if pokemon["items"]["everstone"]:
         held += everstone_html
-    if _in_list("alolan", source):
-        held += alolan_html
-    if _in_list("megastone", source):
+    if pokemon["items"]["megastone"]:
         held += megastone_html
 
     return held

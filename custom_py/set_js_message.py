@@ -145,6 +145,14 @@ def addButtons(handled, message, context):
                 break
         return (True, None)
 
+    elif "customize_pokemon" in message:
+        parts = message.split(":", 1)
+        if len(parts) == 2:
+            _, pokemon_id = parts
+            from ..gui.pokimanki_customization import open_pokemon_customization
+            QTimer.singleShot(0, lambda: open_pokemon_customization(pokemon_id))
+        return (True, None)
+
     else:
         return handled
 
