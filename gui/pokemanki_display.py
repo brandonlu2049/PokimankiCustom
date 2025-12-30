@@ -110,7 +110,7 @@ def _show(
         f'{buttons_html}'
         f'</div>'
         f'</div>'
-        '<div style="text-align: center;">Choose a Pokémon to bring with you!</div>'
+        '<div style="text-align: center; margin-top: 10px;">Choose a Pokémon to bring with you!</div>'
     )
 
     config = mw.addonManager.getConfig(__name__)
@@ -194,14 +194,6 @@ def _card_html(
         '<div class="pk-st-card-top">'
     )
 
-    # split_index = -3  # ここに数値を設定します
-    conf = get_local_conf()
-    value = conf.get("Number of deck name splits", 3)
-    if isinstance(value, int):
-        split_index = -value
-    else:
-        split_index = 3
-    font_size = "small"
     pokemon_name_style = '"cursor: pointer; text-decoration: none;" onmouseover="this.style.textDecoration=\'underline\'" onmouseout="this.style.textDecoration=\'none\'"'
     
     search_pokemon_name = re.sub(r"'", '', name)

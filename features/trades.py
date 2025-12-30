@@ -196,7 +196,7 @@ class Trades:
             )
             
             # Trigger overview rerender
-            from .hooks.initialization import reset_global_html
+            from ..hooks.initialization import reset_global_html
             reset_global_html()
             mw.reset()
             # Force refresh the deck browser/overview webview if visible
@@ -211,10 +211,9 @@ class Trades:
         synced_conf = get_synced_conf()
         trade_refresh_count = synced_conf.get("trade_refresh_counter", 1)
         if trade_refresh_count > 0:
-            tradeData = self._get_new_trades()
-            # Re-render the trade window with the new trades
-            self.trades = tradeData
-            self._trade_window.setup_trades(tradeData)
             trade_refresh_count -= 1
             save_synced_conf("trade_refresh_counter", trade_refresh_count)
+            tradeData = self._get_new_trades()
+            self.trades = tradeData
+            self._trade_window.setup_trades(tradeData)
             return tradeData

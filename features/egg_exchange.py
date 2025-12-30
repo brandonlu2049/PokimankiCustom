@@ -196,7 +196,7 @@ class EggExchange:
             )
 
             # Trigger overview rerender
-            from .hooks.initialization import reset_global_html
+            from ..hooks.initialization import reset_global_html
             reset_global_html()
             mw.reset()
             if mw.state == "deckBrowser":
@@ -274,7 +274,7 @@ class EggExchange:
             )
 
             # Trigger overview rerender
-            from .hooks.initialization import reset_global_html
+            from ..hooks.initialization import reset_global_html
             reset_global_html()
             mw.reset()
             if mw.state == "deckBrowser":
