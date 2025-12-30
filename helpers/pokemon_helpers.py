@@ -262,8 +262,15 @@ def validate_pokemon_data() -> None:
                 "megastone": False,
                 "alolan": False,
             }
-            save_synced_conf("pokemon_list", pokemon_list)
             print("Added items to pokemon: ", pokemon["name"])
+        else:
+            if "alolan" not in pokemon["items"]:
+                pokemon["items"]["alolan"] = False
+            if "everstone" not in pokemon["items"]:
+                pokemon["items"]["everstone"] = False
+            if "megastone" not in pokemon["items"]:
+                pokemon["items"]["megastone"] = False
+    save_synced_conf("pokemon_list", pokemon_list)
 
 
 def FirstProfilePokemon() -> None:
@@ -464,8 +471,35 @@ def clear_pokemon_evolution_cache() -> None:
 
 
 # =============================================================================
-# Pokemon Display in Reviewer
+# Pokemon Display
 # =============================================================================
+
+def get_pokemon_image_name(pokemon) -> str:
+    """
+    Get the image name based on the Pokémon's name and any special attributes.
+
+    :param str name: Pokémon's name.
+    :return: The image name to be used to retrieve it.
+    :rtype: str
+    """
+
+    pkmnimgfolder = addon_dir / "pokemon_images"
+
+    fullname = pokemon["name"]
+    if pokemon["items"]["everstone"]:
+        if pokemon["name"] == "Pikachu":
+            if random.randint(1, 5) != 1:  # 4 in 5 chance
+                fullname += "_Ash" + str(random.randint(1, 4)) # added
+    if pokemon["items"]["megastone"]:
+        if any([pokemon["name"] + "_Mega" in imgname for imgname in os.listdir(pkmnimgfolder)]):
+            fullname += "_Mega"
+            if pokemon["name"] == "Charizard" or pokemon["name"] == "Mewtwo":
+                fullname += get_local_conf()["X_or_Y_mega_evolutions"]
+    if pokemon["items"]["alolan"]:
+        if any([pokemon["name"] + "_Alola" in imgname for imgname in os.listdir(pkmnimgfolder)]):
+            fullname += "_Alola"
+
+    return fullname
 
 # Return HTML to display pokemon icon and level on top toolbar. xp_gain is the amount of xp to add to the current pokemon level.
 def get_pokemon_icon_and_level(card):
@@ -526,7 +560,7 @@ def get_pokemon_icon_and_level(card):
         else:
             display_name = name
 
-        pokemon_image_name = re.sub(r"'", '_', name)
+        pokemon_image_name = get_pokemon_image_name(current_pokemon)
 
         if deck_or_tag_name is not None:
             deck_or_tag_name = re.sub(r'[<>&"\'`]', ' ', deck_or_tag_name)

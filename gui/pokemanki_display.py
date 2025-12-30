@@ -24,7 +24,7 @@ from typing import List, Union
 
 from aqt import mw
 
-from ..helpers.pokemon_helpers import ProfilePokemon, RARITY_COLOR_MAP, HATCH_EGG_LEVEL, set_pokemon_by_id
+from ..helpers.pokemon_helpers import ProfilePokemon, RARITY_COLOR_MAP, HATCH_EGG_LEVEL, set_pokemon_by_id, get_pokemon_image_name
 from ..helpers.config import get_local_conf
 from ..utils import *
 
@@ -42,41 +42,6 @@ def pokemon_display(wholecollection: bool = True) -> str:
     """
 
     pokemon = ProfilePokemon()
-
-    pokemon.append({
-        "id": str(uuid.uuid4()),
-        "name": "Charizard",
-        "level": 50,
-        "rarity": "A",
-        "nickname": None,
-        "items": {
-            "everstone": False,
-            "megastone": True,
-        },
-    })
-    pokemon.append({
-        "id": str(uuid.uuid4()),
-        "name": "Mewtwo",
-        "level": 50,
-        "rarity": "S",
-        "nickname": None,
-        "items": {
-            "everstone": False,
-            "megastone": True,
-        },
-    })
-    pokemon.append({
-        "id": str(uuid.uuid4()),
-        "name": "Diglett",
-        "level": 50,
-        "rarity": "A",
-        "nickname": None,
-        "items": {
-            "everstone": False,
-            "megastone": False,
-            "alolan": True,
-        },
-    })
 
     result = _show(pokemon)
     return result
@@ -207,6 +172,8 @@ def _card_html(
         name = "Mega " + name
         if pokemon["name"] == "Charizard" or pokemon["name"] == "Mewtwo":
             name += " " + get_local_conf()["X_or_Y_mega_evolutions"]
+    if pokemon["items"]["alolan"]:
+        name = "Alolan " + name
     level = pokemon["level"]
     nickname = pokemon["nickname"]
     id = pokemon["id"]
@@ -270,9 +237,9 @@ def _card_html(
     pokemon_sound_name = re.sub(r"'", '_', name)  # for Farfetchd
     
     if config[POKE_TYPE]:
-        card += f'<img style="cursor: pointer;" src="{pkmnimgfolder}/{_image_name(pokemon)}.webp" class="pk-st-card-img" onclick="Pokemanki.bounce(this); pycmd(\'shige_pokemon_sound:{pokemon_sound_name}\');"/>'
+        card += f'<img style="cursor: pointer;" src="{pkmnimgfolder}/{get_pokemon_image_name(pokemon)}.webp" class="pk-st-card-img" onclick="Pokemanki.bounce(this); pycmd(\'shige_pokemon_sound:{pokemon_sound_name}\');"/>'
     else:
-        card += f'<img style="cursor: pointer;" src="{pkmnimgfolder_B}/{_image_name(pokemon)}.webp" class="pk-st-card-img" onclick="Pokemanki.bounce(this); pycmd(\'shige_pokemon_sound:{pokemon_sound_name}\');"/>'
+        card += f'<img style="cursor: pointer;" src="{pkmnimgfolder_B}/{get_pokemon_image_name(pokemon)}.webp" class="pk-st-card-img" onclick="Pokemanki.bounce(this); pycmd(\'shige_pokemon_sound:{pokemon_sound_name}\');"/>'
 
 
 
@@ -308,31 +275,6 @@ def _card_html(
     # line( text_lines, "<b>Total</b>", "</b>%s Pokémon<b>" % _num_pokemon)
 
     return card
-
-def _image_name(pokemon) -> str:
-    """
-    Get the image name based on the Pokémon's name and any special attributes.
-
-    :param str name: Pokémon's name.
-    :return: The image name to be used to retrieve it.
-    :rtype: str
-    """
-
-    pkmnimgfolder = addon_dir / "pokemon_images"
-
-    fullname = pokemon["name"]
-    if pokemon["items"]["everstone"]:
-        if pokemon["name"] == "Pikachu":
-            if random.randint(1, 5) != 1:  # 4 in 5 chance
-                fullname += "_Ash" + str(random.randint(1, 4)) # added
-    if pokemon["items"]["megastone"]:
-        if any([pokemon["name"] + "_Mega" in imgname for imgname in os.listdir(pkmnimgfolder)]):
-            fullname += "_Mega"
-            if pokemon["name"] == "Charizard" or pokemon["name"] == "Mewtwo":
-                fullname += get_local_conf()["X_or_Y_mega_evolutions"]
-
-    return fullname
-
 
 def _egg_hatch_text(level: float, rarity: str) -> str:
     """
@@ -377,9 +319,12 @@ def _held_html(pokemon) -> str:
     held = ""
     everstone_html = f'<img src="{pkmnimgfolder}/item_Everstone.webp" height="20px"/>'
     megastone_html = f'<img src="{pkmnimgfolder}/item_Mega_Stone.webp" height="25px"/>'
+    alolan_html = f'<img src="{pkmnimgfolder}/item_Alolan_Passport.webp" height="25px"/>'
 
     if pokemon["items"]["everstone"]:
         held += everstone_html
+    if pokemon["items"]["alolan"]:
+        held += alolan_html
     if pokemon["items"]["megastone"]:
         held += megastone_html
 

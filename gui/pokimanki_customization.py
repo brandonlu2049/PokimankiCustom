@@ -15,13 +15,12 @@ Pokemon Customization Dialog - Allows users to customize individual Pokemon
 from aqt import mw
 from aqt.qt import (
     QDialog, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, 
-    QPushButton, QCheckBox, QGroupBox, QPixmap, Qt, QFrame
+    QPushButton, QCheckBox, QGroupBox, QPixmap, Qt, QFrame, QMovie, QSize
 )
 from aqt.utils import tooltip
 
-from ..helpers.config import get_synced_conf, save_synced_conf
-from ..helpers.pokemon_helpers import get_pokemon_by_id, set_pokemon_by_id
-from ..utils import pkmnimgfolder, pkmnimgfolder_B
+from ..helpers.pokemon_helpers import get_pokemon_by_id, get_pokemon_image_name
+from ..utils import addon_dir
 from ..custom_py.path_manager import CustomDialog
 
 from ..features.customization import save_changes
@@ -58,13 +57,35 @@ class PokemonCustomizationDialog(CustomDialog):
         config = mw.addonManager.getConfig(__name__)
         poke_type = config.get("PokeType", True) if config else True
         
-        img_folder = pkmnimgfolder if poke_type else pkmnimgfolder_B
-        img_path = f"{img_folder}/{self.pokemon_data['name']}.webp"
+        img_folder_name = "pokemon_images" if poke_type else "pokemon_images_static"
+        img_name = get_pokemon_image_name(self.pokemon_data)
+        img_path = str(addon_dir / img_folder_name / f"{img_name}.webp")
         
-        # We'll set a placeholder size for the image label
-        self.pokemon_image.setFixedSize(96, 96)
+        # Consistent bounding box with 10px internal padding
+        box_size = 120  # 96 + 10*2 for padding
+        img_size = 100   # Actual image area
+        self.pokemon_image.setFixedSize(box_size, box_size)
         self.pokemon_image.setStyleSheet("border: 1px solid #ccc; border-radius: 8px;")
         self.pokemon_image.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.pokemon_image.setContentsMargins(10, 10, 10, 10)
+        
+        # Use QMovie for animated images, QPixmap for static
+        if poke_type:
+            # Animated image - use QMovie
+            self.pokemon_movie = QMovie(img_path)
+            self.pokemon_movie.jumpToFrame(0)
+            original_size = self.pokemon_movie.currentImage().size()
+            if not original_size.isEmpty():
+                scaled_size = original_size.scaled(img_size, img_size, Qt.AspectRatioMode.KeepAspectRatio)
+                self.pokemon_movie.setScaledSize(scaled_size)
+            self.pokemon_image.setMovie(self.pokemon_movie)
+            self.pokemon_movie.start()
+        else:
+            # Static image - use QPixmap
+            pixmap = QPixmap(img_path)
+            if not pixmap.isNull():
+                scaled_pixmap = pixmap.scaled(img_size, img_size, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
+                self.pokemon_image.setPixmap(scaled_pixmap)
         
         header_layout.addWidget(self.pokemon_image)
         
