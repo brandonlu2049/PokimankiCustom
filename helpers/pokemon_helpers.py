@@ -1,15 +1,19 @@
-
-
+import csv
 import random
 import re
 import uuid
+from typing import Any, Dict, List, Tuple, Union
+
 from anki.cards import Card
 from aqt import mw, gui_hooks
-from typing import Any, Dict
+from aqt.qt import *
+from aqt.utils import showInfo
 
-from .config import get_synced_conf, save_synced_conf
-from .utils import pkmnimgfolder, pkmnimgfolder_B, addon_package
-from .compute import load_pokemon_gen_all
+from .config import get_local_conf, get_synced_conf, save_synced_conf
+from ..utils import pkmnimgfolder, pkmnimgfolder_B, addon_package, addon_dir
+from ..stats import MultiStats, TagStats, cardInterval, cardIdsFromDeckIds
+from ..custom_py.path_manager import (CustomWidget as QWidget, CustomMessageBox as QMessageBox)
+from ..custom_py.count_time import shigeTaskTimer
 
 IMAGE_HEIGHT = "3em"
 
@@ -19,8 +23,8 @@ DISABLE_LABEL_ID = "disable_pokemanki_gold"
 LABEL_PYCMD = "shige_pokemanki_clicked"
 LABEL_INDEX = 6
 
-POKEMON_EMPTY =  f"/_addons/{addon_package}/custom_py/pokemon_empty.png"
-POKEBALL_ICON =   f"/_addons/{addon_package}/custom_py/pokeball.png"
+POKEMON_EMPTY = f"/_addons/{addon_package}/custom_py/pokemon_empty.png"
+POKEBALL_ICON = f"/_addons/{addon_package}/custom_py/pokeball.png"
 
 DEFAULT_POKEMON_HTML = f"""
 <div style='display: flex; align-items: center;'>
@@ -58,6 +62,248 @@ RARITY_COLOR_MAP = {
 # Global cache for pokemon evolution mapping
 _pokemon_evolution_mapping = None
 
+
+# =============================================================================
+# Pokemon Generation Loading
+# =============================================================================
+
+def loadPokemonGenerations(
+    csv_fpath: Union[str, bytes],
+    pokemonlist: List[str],
+    tiers: List[str],
+    evolutionLevel1: List[Union[int, None]],
+    evolution1: List[Union[str, None]],
+    evolutionLevel2: List[Union[int, None]],
+    evolution2: List[Union[str, None]],
+) -> None:
+    with open(csv_fpath, "r") as csv_file:
+        csv_reader = csv.DictReader(csv_file, delimiter=",")
+        for line in csv_reader:
+            pokemon = line["pokemon"]
+            tier = line["tier"]
+            first_ev_lv = line["first_evolution_level"]
+            if first_ev_lv.isnumeric():
+                first_ev_lv = int(first_ev_lv)
+            else:
+                first_ev_lv = None
+            first_ev = line["first_evolution"]
+            if first_ev == "NA":
+                first_ev = None
+            second_ev_lv = line["second_evolution_level"]
+            if second_ev_lv.isnumeric():
+                second_ev_lv = int(second_ev_lv)
+            else:
+                second_ev_lv = None
+            second_ev = line["second_evolution"]
+            if second_ev == "NA":
+                second_ev = None
+
+            pokemonlist.append(pokemon)
+            tiers.append(tier)
+            evolutionLevel1.append(first_ev_lv)
+            evolution1.append(first_ev)
+            evolutionLevel2.append(second_ev_lv)
+            evolution2.append(second_ev)
+    return
+
+
+def load_pokemon_gen_all(
+    pokemonlist: List[str],
+    tiers: List[str],
+    evolutionLevel1: List[Union[int, None]],
+    evolution1: List[Union[str, None]],
+    evolutionLevel2: List[Union[int, None]],
+    evolution2: List[Union[str, None]],
+) -> None:
+    def load_pokemon_gen(csv_name: str) -> None:
+        csv_fpath = addon_dir / "pokemon_evolutions" / csv_name
+        loadPokemonGenerations(
+            csv_fpath,
+            pokemonlist,
+            tiers,
+            evolutionLevel1,
+            evolution1,
+            evolutionLevel2,
+            evolution2,
+        )
+
+    load_pokemon_gen("pokemon_gen1.csv")
+    if get_local_conf()["gen2"]:
+        load_pokemon_gen("pokemon_gen2.csv")
+        if get_local_conf()["gen4_evolutions"]:
+            load_pokemon_gen("pokemon_gen1_plus2_plus4.csv")
+            load_pokemon_gen("pokemon_gen2_plus4.csv")
+        else:
+            load_pokemon_gen("pokemon_gen1_plus2_no4.csv")
+            load_pokemon_gen("pokemon_gen2_no4.csv")
+    else:
+        if get_local_conf()["gen4_evolutions"]:
+            # a lot of gen 4 evolutions that affect gen 1 also include gen 2 evolutions
+            # so let's just include gen 2 for these evolution lines
+            load_pokemon_gen("pokemon_gen1_plus2_plus4.csv")
+        else:
+            load_pokemon_gen("pokemon_gen1_no2_no4.csv")
+    if get_local_conf()["gen3"]:
+        load_pokemon_gen("pokemon_gen3.csv")
+    if get_local_conf()["gen4"]:
+        load_pokemon_gen("pokemon_gen4.csv")
+    if get_local_conf()["gen5"]:
+        load_pokemon_gen("pokemon_gen5.csv")
+
+# =============================================================================
+# Starter Pokemon
+# =============================================================================
+
+def randomStarter() -> List[str]:
+    available_generations = [1]
+    if get_local_conf()["gen2"]:
+        available_generations.append(2)
+    if get_local_conf()["gen3"]:
+        available_generations.append(3)
+    if get_local_conf()["gen4"]:
+        available_generations.append(4)
+    if get_local_conf()["gen5"]:
+        available_generations.append(5)
+
+    choice_generation = random.choice(available_generations)
+    if choice_generation == 1:
+        return ["Bulbasaur", "Charmander", "Squirtle"]
+    elif choice_generation == 2:
+        return ["Chikorita", "Cyndaquil", "Totodile"]
+    elif choice_generation == 3:
+        return ["Treecko", "Torchic", "Mudkip"]
+    elif choice_generation == 4:
+        return ["Turtwig", "Chimchar", "Piplup"]
+    elif choice_generation == 5:
+        return ["Snivy", "Tepig", "Oshawott"]
+
+# =============================================================================
+# Profile Pokemon
+# =============================================================================
+
+def ProfilePokemon() -> Union[List[dict], None]:
+    """
+    Generate an array of ProfilePokemon
+
+    :return: List of ProfilePokemon.
+    :rtype: List
+    """
+    print("Fetching Pokemon from profile")
+    FirstProfilePokemon()
+
+    pokemontotal = get_synced_conf()["pokemon_list"]
+
+    if not pokemontotal:
+        return  # If no pokemanki.json, make empty pokemontotal and modifiedpokemontotal lists
+
+    return pokemontotal
+
+
+def migrate_pokemon_data() -> None:
+    """
+    Migrate Pokemon data from old list format [name, deck, level, nickname] 
+    to new dictionary format {"id": ..., "name": ..., "deck": ..., "level": ..., "nickname": ...}
+    """
+    synced_config_data = get_synced_conf()
+    
+    # Migrate pokemon_list
+    pokemon_list = synced_config_data.get("pokemon_list", [])
+    migrated_pokemon = []
+    needs_migration = False
+    
+    for pokemon in pokemon_list:
+        if isinstance(pokemon, list):
+            # Old format: [name, deck, level, nickname?]
+            migrated = {
+                "id": str(uuid.uuid4()),
+                "name": pokemon[0],
+                "deck": pokemon[1], 
+                "level": pokemon[2],
+                "nickname": pokemon[3] if len(pokemon) > 3 else None
+            }
+            migrated_pokemon.append(migrated)
+            needs_migration = True
+        else:
+            migrated_pokemon.append(pokemon)
+    
+    if needs_migration:
+        save_synced_conf("pokemon_list", migrated_pokemon)
+        print("Migrated pokemon_list to dictionary format with UUIDs")
+    
+    # Migrate tagmon_list  
+    tagmon_list = synced_config_data.get("tagmon_list", [])
+    migrated_tagmon = []
+    needs_tagmon_migration = False
+    
+    for pokemon in tagmon_list:
+        if isinstance(pokemon, (list, tuple)):
+            # Old format: (name, deck, level, nickname?)
+            migrated = {
+                "id": str(uuid.uuid4()),
+                "name": pokemon[0],
+                "deck": pokemon[1],
+                "level": pokemon[2], 
+                "nickname": pokemon[3] if len(pokemon) > 3 else None
+            }
+            migrated_tagmon.append(migrated)
+            needs_tagmon_migration = True
+        else:
+            migrated_tagmon.append(pokemon)
+    
+    if needs_tagmon_migration:
+        save_synced_conf("tagmon_list", migrated_tagmon)
+        print("Migrated tagmon_list to dictionary format with UUIDs")
+
+
+def FirstProfilePokemon() -> None:
+    """
+    Ensure that at least 1 pokemon is in the profile Pokemon list.
+    Set current pokemon index to 0 if unassigned.
+
+    :return: None
+    """
+    
+    # Migrate data first
+    migrate_pokemon_data()
+
+    synced_config_data = get_synced_conf()
+    pokemon_list = synced_config_data["pokemon_list"]
+
+    if not pokemon_list or len(pokemon_list) == 0:
+        # Choose a starter Pokemon
+        msgbox = QMessageBox()
+        msgbox.setWindowTitle("Pokémanki")
+        if hasattr(msgbox, 'change_icon_path'): msgbox.change_icon_path_professors()
+        msgbox.setText(
+            f"Choose a starter Pokémon!"
+        )
+
+        starters = randomStarter()
+        for starter in starters:
+            msgbox.addButton(starter, QMessageBox.ButtonRole.AcceptRole)
+            if hasattr(msgbox, 'change_icon_path'): msgbox.display_image_below_text(starter)
+        msgbox.exec()
+        starter_pokemon_name = msgbox.clickedButton().text()
+        pokemon_list.append({
+            "id": str(uuid.uuid4()),
+            "name": starter_pokemon_name,
+            "deck": -1,
+            "level": 1,
+            "nickname": None
+        })
+        save_synced_conf("pokemon_list", pokemon_list)
+        print("Added starter pokemon to profile Pokemon list: ", starter_pokemon_name)
+
+    if (not get_synced_conf()["current_pokemon_id"]):
+        save_synced_conf("current_pokemon_id", pokemon_list[0]["id"])
+
+    return
+
+
+# =============================================================================
+# Pokemon Creation and Management
+# =============================================================================
+
 # Centralized function to create a pokemon dictionary. Always use this function to create a pokemon.
 # Arguments:
 # - name: str - The name of the pokemon
@@ -73,6 +319,7 @@ def create_pokemon(name: str, level: float, rarity: str, nickname: str = None) -
         "rarity": rarity,
         "nickname": nickname
     }
+
 
 def get_all_pokemon_tiered():
     pokemonlist = []
@@ -91,6 +338,7 @@ def get_all_pokemon_tiered():
         tierdict[tier].append(pokemonlist[i])
     return tierdict
 
+
 def generate_by_rarity(pokemonList):
     tierdict = get_all_pokemon_tiered()
     generatedPokemonList = []
@@ -105,6 +353,7 @@ def generate_by_rarity(pokemonList):
 
     return generatedPokemonList
 
+
 def add_xp_to_pokemon(pokemon, xp):
     pokemon["level"] += xp
     print("adding xp to pokemon", pokemon)
@@ -117,6 +366,7 @@ def add_xp_to_pokemon(pokemon, xp):
             pokemon["name"] = evolutions[pokemon["name"]]["next_evolution"]
     set_pokemon_by_id(pokemon["id"], pokemon)
     return
+
 
 def get_pokemon_evolution_mapping() -> Dict[str, Dict[str, Any]]:
     """Get cached pokemon evolution mapping, creating it if necessary.
@@ -133,8 +383,6 @@ def get_pokemon_evolution_mapping() -> Dict[str, Dict[str, Any]]:
     
     # Create the mapping
     try:
-        from ..compute import load_pokemon_gen_all
-        
         pokemonlist = []
         tiers = []
         evolutionLevel1 = []
@@ -191,6 +439,11 @@ def clear_pokemon_evolution_cache() -> None:
     global _pokemon_evolution_mapping
     _pokemon_evolution_mapping = None
 
+
+# =============================================================================
+# Pokemon Display in Reviewer
+# =============================================================================
+
 # Return HTML to display pokemon icon and level on top toolbar. xp_gain is the amount of xp to add to the current pokemon level.
 def get_pokemon_icon_and_level(card):
     config = mw.addonManager.getConfig(__name__)
@@ -231,7 +484,6 @@ def get_pokemon_icon_and_level(card):
             
             if current_pokemon:
                 # Update the current_pokemon_id
-                from .config import save_synced_conf
                 save_synced_conf("current_pokemon_id", current_pokemon.get("id"))
     
     if current_pokemon:
@@ -272,7 +524,6 @@ def get_pokemon_icon_and_level(card):
         """
 
         pokemon_icon = f"{poke_type}/{pokemon_image_name}.webp"
-        # pokemon_icon_html = f"<img src='{pokemon_icon}' alt='{name}' style='height: {IMAGE_HEIGHT};'> {name} Lv.{show_level}"
 
         pokemon_icon_html = f"""
         <div style='display: flex; align-items: center;'>
@@ -305,19 +556,16 @@ def pokemon_show_answer(card, *args, **kwargs):
     current_pokemon = get_pokemon_by_id(current_pokemon_id)
     add_xp_to_pokemon(current_pokemon, LEVEL_INCREMENT_AMOUNT)
 
-    if "cards_this_session" not in synced_config_data:
-        synced_config_data["cards_this_session"] = 0
-    save_synced_conf("cards_this_session", synced_config_data["cards_this_session"] + 1)
-
-    if "egg_counter" not in synced_config_data:
-        synced_config_data["egg_counter"] = 0
-    save_synced_conf("egg_counter", synced_config_data["egg_counter"] + 1)
+    if "card_counter" not in synced_config_data:
+        synced_config_data["card_counter"] = 0
+    save_synced_conf("card_counter", synced_config_data["card_counter"] + 1)
     
     if config.get("show_pokemon_in_reviewer",True):
         get_pokemon_icon_and_level(card)
     else:
         pokemon_icon_html = ""
         change_pokemon_icon_on_top_tool_bar(pokemon_icon_html)
+
 
 def pokemon_show_question(card, *args, **kwargs):
     config = mw.addonManager.getConfig(__name__)
@@ -327,6 +575,7 @@ def pokemon_show_question(card, *args, **kwargs):
     else:
         pokemon_icon_html = ""
         change_pokemon_icon_on_top_tool_bar(pokemon_icon_html)
+
 
 def change_pokemon_icon_on_top_tool_bar(new_label):
     js_code = f"""
@@ -381,6 +630,7 @@ def get_pokemon_by_id(id: str) -> dict:
             return pokemon
     return None
 
+
 def set_pokemon_by_id(id: str, pokemon: dict) -> None:
     pokemon_list = get_synced_conf()["pokemon_list"]
     for i, p in enumerate(pokemon_list):
@@ -388,6 +638,7 @@ def set_pokemon_by_id(id: str, pokemon: dict) -> None:
             pokemon_list[i] = pokemon
             break
     save_synced_conf("pokemon_list", pokemon_list)
+
 
 def remove_pokemon_by_id(id: str) -> None:
     pokemon_list = get_synced_conf()["pokemon_list"]

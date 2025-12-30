@@ -10,8 +10,8 @@
 
 from typing import Any, Tuple
 
-from ..config import get_synced_conf
-from ..display import pokemon_display
+from ..helpers.config import get_synced_conf
+from ..gui.pokemanki_display import pokemon_display
 
 # Global variable for stats dialog
 statsDialog = None

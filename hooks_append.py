@@ -56,7 +56,7 @@ def append_custom_py_hooks():
 
 def append_show_pokemon_py_hooks():
     print("  - Registering Pokemon hooks")
-    from .pokemon_helpers import pokemon_show_answer, pokemon_show_question
+    from .helpers.pokemon_helpers import pokemon_show_answer, pokemon_show_question
     from .hooks.study_completion import pokemon_finish_session
 
     print("    * Registering reviewer hooks")

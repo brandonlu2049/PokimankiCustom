@@ -24,14 +24,13 @@ from typing import List, Tuple, Union
 
 from aqt import mw
 
-from .compute import ProfilePokemon
-from .pokemon_helpers import RARITY_COLOR_MAP
-from .config import get_local_conf
-from .utils import *
+from ..helpers.pokemon_helpers import ProfilePokemon, RARITY_COLOR_MAP
+from ..helpers.config import get_local_conf
+from ..utils import *
 from aqt.utils import tooltip
 
-from .custom_py.set_js_message import *
-from .custom_py.count_time import shigeTaskTimer
+from ..custom_py.set_js_message import *
+from ..custom_py.count_time import shigeTaskTimer
 
 
 def pokemon_display(wholecollection: bool = True) -> str:
@@ -121,38 +120,34 @@ def _show(
             f'<a href="{ANKI_WEB_URL}" style="color: inherit; text-decoration: none;">Choose a Pokémon to bring with you!</a></div>')
 
 
-    # If multiple Pokémon, show flex row of cards
-    if type(data) == list:
-        if len(data) == 1:
-            txt += '<div class="pk-st-single">'
-            multi = False
+    if len(data) == 1:
+        txt += '<div class="pk-st-single">'
+        multi = False
+    else:
+        conf = get_local_conf()
+        card_flow = conf.get("align_cards", "wrap")
+        if card_flow == "wrap":
+            txt += '<div class="pk-st-container">'
+        elif card_flow == "hscroll":
+            txt += '<div class="pk-st-container" style="flex-wrap: nowrap; \
+                    justify-content: flex-start;">'
+        elif card_flow == "scrollbox":
+            max_height_px = conf.get("max_height_px", "500")
+            txt +=  f'<div class="pk-st-container" style="max-height: {max_height_px}px;'\
+                    'border: 1px solid rgb(150, 150, 150); border-radius: 10px;">'
         else:
-            conf = get_local_conf()
-            card_flow = conf.get("align_cards", "wrap")
-            if card_flow == "wrap":
-                txt += '<div class="pk-st-container">'
-            elif card_flow == "hscroll":
-                txt += '<div class="pk-st-container" style="flex-wrap: nowrap; \
-                        justify-content: flex-start;">'
-            elif card_flow == "scrollbox":
-                max_height_px = conf.get("max_height_px", "500")
-                txt +=  f'<div class="pk-st-container" style="max-height: {max_height_px}px;'\
-                        'border: 1px solid rgb(150, 150, 150); border-radius: 10px;">'
-            else:
-                txt += '<div class="pk-st-container">'
+            txt += '<div class="pk-st-container">'
 
-            multi = True
+        multi = True
 
-        # print(">173")
-
-        sortedData = sorted(data, key=lambda k: k["level"], reverse=True)
-        shigeTaskTimer.start("sortedData")
-        for pokemon in sortedData:
-            txt += _card_html(
-                pokemon,
-                multi,
-            )
-        shigeTaskTimer.end("sortedData")
+    sortedData = sorted(data, key=lambda k: k["level"], reverse=True)
+    shigeTaskTimer.start("sortedData")
+    for pokemon in sortedData:
+        txt += _card_html(
+            pokemon,
+            multi,
+        )
+    shigeTaskTimer.end("sortedData")
 
     # Close cards container
     txt += "</div>"
@@ -180,7 +175,8 @@ def _card_html(
     print(f"pokemon: {pokemon}")
     # Get pokemon data
     name = pokemon["name"]
-    source = pokemon["deck"]
+    # TODO: Remove this when items are fixed
+    source = pokemon.get("deck", -1)
     level = pokemon["level"]
     nickname = pokemon["nickname"]
     id = pokemon["id"]
@@ -209,7 +205,6 @@ def _card_html(
     pokemon_name_style = '"cursor: pointer; text-decoration: none;" onmouseover="this.style.textDecoration=\'underline\'" onmouseout="this.style.textDecoration=\'none\'"'
     
     search_pokemon_name = re.sub(r"'", '', name)
-    deck_or_tag_name = _get_source_name(source)
     
     card += (
         f'<div class="pk-st-card-name">'
@@ -227,7 +222,7 @@ def _card_html(
         "</div>" 
         '<div class="pk-st-card-lvl" style="margin-left: 0; align-self: center; text-align: center;">'
         '<span>Lvl ' 
-        f'{int(level-50) if _in_list("prestige", source) else int(level)}</span>'
+        f'{int(level)}</span>'
         "</div>"
         "</div>"
     )

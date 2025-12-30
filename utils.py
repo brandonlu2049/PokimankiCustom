@@ -26,12 +26,12 @@ from aqt import mw
 from aqt.qt import *
 from aqt.utils import showInfo
 
-from .config import get_synced_conf
+from .helpers.config import get_synced_conf
 from .custom_py.path_manager import (CustomWidget as QWidget, CustomMessageBox as QMessageBox,
                                     CustomDialog as QDialog, InfoDialog as showInfo)
 # Find current directory
 addon_package = mw.addonManager.addonFromModule(__name__)
-addon_dir = Path(__file__).parents[0]
+addon_dir = Path(__file__).parent
 # Assign Pokemon Image folder directory name
 
 pkmnimgfolder = f"/_addons/{addon_package}/pokemon_images"
@@ -44,7 +44,7 @@ mediafolder = Path(mw.col.media.dir())
 def reset_utils_global():
     global addon_package, addon_dir, pkmnimgfolder, pkmnimgfolder_B, cssfolder, mediafolder
     addon_package = mw.addonManager.addonFromModule(__name__)
-    addon_dir = Path(__file__).parents[0]
+    addon_dir = Path(__file__).parent
     pkmnimgfolder = f"/_addons/{addon_package}/pokemon_images"
     pkmnimgfolder_B = f"/_addons/{addon_package}/pokemon_images_static"
     cssfolder = f"/_addons/{addon_package}/pokemanki_css"

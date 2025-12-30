@@ -24,12 +24,12 @@ from datetime import datetime, timedelta
 from aqt import mw
 from aqt.webview import AnkiWebView
 
-from ..config import get_synced_conf, save_synced_conf
-from ..pokemon_helpers import get_pokemon_by_id, set_pokemon_by_id, add_xp_to_pokemon, create_pokemon
+from ..helpers.config import get_synced_conf, save_synced_conf
+from ..helpers.pokemon_helpers import get_pokemon_by_id, set_pokemon_by_id, add_xp_to_pokemon, create_pokemon
 
 # Constants
 LEVEL_INCREMENT_AMOUNT_COMPLETION = 0.05
-CARDS_PER_EGG = 500
+CARDS_PER_EGG = 300
 
 def pokemon_finish_session(*args, **kwargs):    
     """Called when a study session ends to calculate and award XP"""

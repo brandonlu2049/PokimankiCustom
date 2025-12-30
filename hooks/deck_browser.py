@@ -14,10 +14,10 @@ from pathlib import Path
 from aqt import mw
 from aqt.deckbrowser import DeckBrowser, DeckBrowserContent
 
-from ..config import get_synced_conf
-from ..display import pokemon_display
+from ..helpers.config import get_synced_conf
+from ..gui.pokemanki_display import pokemon_display
 from ..utils import addon_dir
-from ..pokemon_helpers import get_pokemon_icon_and_level
+from ..helpers.pokemon_helpers import get_pokemon_icon_and_level
 
 
 def replace_gears(deck_browser: DeckBrowser, content: DeckBrowserContent) -> None:
@@ -36,7 +36,7 @@ def deck_browser_open(deck_browser: "DeckBrowser", content: "DeckBrowserContent"
 
     try:
         config = mw.addonManager.getConfig(__name__)
-        if not config.get("Show Pokemon in Home and overview", True):
+        if not config.get("show_pokemon_in_home_and_overview", True):
             return
     except:
         return
@@ -44,14 +44,14 @@ def deck_browser_open(deck_browser: "DeckBrowser", content: "DeckBrowserContent"
     js = (addon_dir / "web.js").read_text(encoding="utf-8")
     css = (addon_dir / "pokemanki_css" / "view_stats.css").read_text(encoding="utf-8")
 
-    config["Show Pokemon in Home and overview"] = False # Avoid Freeze
+    config["show_pokemon_in_home_and_overview"] = False # Avoid Freeze
     mw.addonManager.writeConfig(__name__, config)
 
     html_home = pokemon_display(True).replace("`", "'") # wholeCollection
 
     print("Making new Pokemon rendering")
 
-    config["Show Pokemon in Home and overview"] = True # Avoid Freeze
+    config["show_pokemon_in_home_and_overview"] = True # Avoid Freeze
     mw.addonManager.writeConfig(__name__, config)
 
     config = mw.addonManager.getConfig(__name__)

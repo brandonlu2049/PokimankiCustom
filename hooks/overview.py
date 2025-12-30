@@ -11,8 +11,8 @@
 from aqt import mw
 from aqt.overview import Overview, OverviewContent
 
-from ..display import pokemon_display
-from ..utils import addon_dir
+from ..gui.pokemanki_display import pokemon_display
+from ..utils import addon_dir, addon_package
 
 # Global variables for caching
 overview_deck_html_map = {}
@@ -26,8 +26,8 @@ def overview_open(overview: "Overview", content: "OverviewContent") -> None:
     """Handle overview opening and add Pokemon display."""
     global overview_deck_html_map
 
-    config = mw.addonManager.getConfig(__name__)
-    if not config.get("Show Pokemon in Home and overview", True):
+    config = mw.addonManager.getConfig(addon_package)
+    if not config.get("show_pokemon_in_home_and_overview", True):
         return
 
     js = (addon_dir / "web.js").read_text(encoding="utf-8")
@@ -40,15 +40,15 @@ def overview_open(overview: "Overview", content: "OverviewContent") -> None:
         html = overview_deck_html_map[curr_deck]
         print("use saved html")
     else:
-        config["Show Pokemon in Home and overview"] = False # Avoid Freeze
-        mw.addonManager.writeConfig(__name__, config)
+        config["show_pokemon_in_home_and_overview"] = False # Avoid Freeze
+        mw.addonManager.writeConfig(addon_package, config)
 
         html = pokemon_display(False).replace("`", "'") # currentDeck
         overview_deck_html_map[curr_deck] = html
         print("make new html")
 
-        config["Show Pokemon in Home and overview"] = True # Avoid Freeze
-        mw.addonManager.writeConfig(__name__, config)
+        config["show_pokemon_in_home_and_overview"] = True # Avoid Freeze
+        mw.addonManager.writeConfig(addon_package, config)
 
     content.table += f"{html}"
     content.table += f"<script>{js}</script>"

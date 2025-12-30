@@ -14,5 +14,6 @@
 
   "is_change_log_2024_03_26": true,
   "is_rate_this": true,
-  "show_pokemon_in_reviewer": true
+  "show_pokemon_in_reviewer": true,
+  "show_pokemon_in_home_and_overview": true
 }

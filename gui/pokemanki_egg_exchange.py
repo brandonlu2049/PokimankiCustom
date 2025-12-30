@@ -35,13 +35,13 @@ from aqt import mw
 from .forms import pokemanki_egg_exchange
 from ..custom_py.path_manager import (CustomDialog as QDialog)
 from ..custom_py.set_js_message import POKE_TYPE
-from ..config import get_synced_conf
-from ..pokemon_helpers import RARITY_COLOR_MAP
+from ..helpers.config import get_synced_conf
+from ..helpers.pokemon_helpers import RARITY_COLOR_MAP
 from aqt.webview import AnkiWebViewKind
 from anki.utils import pointVersion
 
 if TYPE_CHECKING:
-    from ..egg_exchange import EggExchange
+    from ..features.egg_exchange import EggExchange
 
 # Rarity levels and colors for display
 RARITY_ORDER = ["F", "E", "D", "C", "B", "A", "S"]

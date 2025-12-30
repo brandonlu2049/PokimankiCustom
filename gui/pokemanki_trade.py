@@ -37,13 +37,13 @@ from .forms import pokemanki_trade
 from ..custom_py.path_manager import (CustomWidget as QWidget,CustomMessageBox as QMessageBox,CustomDialog as QDialog,
                                         random_trainer_image)
 from ..custom_py.set_js_message import POKE_TYPE
-from ..config import get_synced_conf
+from ..helpers.config import get_synced_conf
 
 from aqt.webview import AnkiWebViewKind
 from anki.utils import pointVersion
 
 if TYPE_CHECKING:
-    from ..trades import Trades
+    from ..features.trades import Trades
 
 
 class TradeWindow(QDialog):

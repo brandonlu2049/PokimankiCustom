@@ -24,16 +24,16 @@ from datetime import date as dt
 
 from typing import List, Optional, Tuple, Union
 
-from .config import get_local_conf, get_synced_conf, save_synced_conf
-from .utils import *
+from ..helpers.config import get_local_conf, get_synced_conf, save_synced_conf
+from ..utils import *
 
-from .gui.pokemanki_trade import *
-from .custom_py.path_manager import (CustomWidget as QWidget,
+from ..gui.pokemanki_trade import *
+from ..custom_py.path_manager import (CustomWidget as QWidget,
                                     CustomMessageBox as QMessageBox,
                                     CustomDialog as QDialog,
                                     InfoDialog as showInfo)
 
-from .pokemon_helpers import generate_by_rarity, get_pokemon_by_id, remove_pokemon_by_id, create_pokemon
+from ..helpers.pokemon_helpers import generate_by_rarity, get_pokemon_by_id, remove_pokemon_by_id, create_pokemon
 
 TRADES_PER_DAY = 3
 

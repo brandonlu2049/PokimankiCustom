@@ -19,7 +19,7 @@
 from aqt.qt import *
 from aqt.utils import showInfo, tooltip
 
-from .config import (
+from .helpers.config import (
     get_synced_conf,
     save_synced_conf,
     setup_default_synced_conf,

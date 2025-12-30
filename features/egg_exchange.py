@@ -22,14 +22,14 @@ from typing import Optional
 
 from aqt import mw
 
-from .config import get_synced_conf, save_synced_conf
-from .utils import mediafolder
-from .gui.pokemanki_egg_exchange import EggExchangeWindow
-from .custom_py.path_manager import (
+from ..helpers.config import get_synced_conf, save_synced_conf
+from ..utils import mediafolder
+from ..gui.pokemanki_egg_exchange import EggExchangeWindow
+from ..custom_py.path_manager import (
     CustomMessageBox as QMessageBox,
     InfoDialog as showInfo
 )
-from .pokemon_helpers import get_pokemon_by_id, remove_pokemon_by_id, create_pokemon
+from ..helpers.pokemon_helpers import get_pokemon_by_id, remove_pokemon_by_id, create_pokemon
 
 # Rarity levels in order from lowest to highest
 RARITY_ORDER = ["F", "E", "D", "C", "B", "A", "S"]

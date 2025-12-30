@@ -26,7 +26,7 @@ from anki.decks import DeckTreeNode
 from aqt.overview import Overview, OverviewContent
 from aqt.webview import WebContent
 
-from ..config import get_synced_conf
+from ..helpers.config import get_synced_conf
 from ..utils import pkmnimgfolder,pkmnimgfolder_B
 from ..custom_py.set_js_message import POKE_TYPE
 

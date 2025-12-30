@@ -15,7 +15,7 @@ from aqt import mw, gui_hooks
 from aqt.qt import QMenu
 from aqt.utils import askUser
 
-from ..config import init_config
+from ..helpers.config import init_config
 from .menu import build_menu
 
 def remove_config(dialog: aqt.addons.AddonsDialog, addons: List[str]) -> None:

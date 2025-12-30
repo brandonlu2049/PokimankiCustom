@@ -106,7 +106,7 @@ def addButtons(handled, message, context):
         parts = message.split(":", 1)
         if len(parts) == 2:
             _, pokemon_id = parts
-            from ..config import save_synced_conf
+            from ..helpers.config import save_synced_conf
             save_synced_conf("current_pokemon_id", pokemon_id)
             print(f"Set current Pokemon ID to: {pokemon_id}")
             
@@ -130,7 +130,7 @@ def addButtons(handled, message, context):
             # Update the top toolbar to show the newly selected pokemon (respecting config settings)
             config = mw.addonManager.getConfig(__name__)
             if config.get("show_pokemon_in_reviewer", True):
-                from ..pokemon_helpers import get_pokemon_icon_and_level
+                from ..helpers.pokemon_helpers import get_pokemon_icon_and_level
                 get_pokemon_icon_and_level(None)
             
             # Also clear cached data for future refreshes
@@ -167,7 +167,7 @@ def toggle_checkbox_state():
 def toggle_checkbox_pokemon_overview():
     config = mw.addonManager.getConfig(__name__)
     # config["Show Pokemon in the overview"] = not config.get("Show Pokemon in the overview", True)
-    config["Show Pokemon in Home and overview"] = not config.get("Show Pokemon in Home and overview", True)
+    config["show_pokemon_in_home_and_overview"] = not config.get("show_pokemon_in_home_and_overview", True)
     mw.addonManager.writeConfig(__name__, config)
 
 
@@ -175,7 +175,7 @@ def toggle_checkbox_pokemon_reviewer():
     config = mw.addonManager.getConfig(__name__)
     config["show_pokemon_in_reviewer"] = not config.get("show_pokemon_in_reviewer", True)
     mw.addonManager.writeConfig(__name__, config)
-    from ..pokemon_helpers import toggle_on_or_off_top_toolbar
+    from ..helpers.pokemon_helpers import toggle_on_or_off_top_toolbar
     toggle_on_or_off_top_toolbar()
 
 def toggle_hide_banner_and_options():
@@ -220,7 +220,7 @@ def run_trade_window(*args,**kwargs):
 
         mw.pokemenu.addAction(toggleaction_b)
         # toggleaction_b.setChecked(config.get("Show Pokemon in the overview",True))
-        toggleaction_b.setChecked(config.get("Show Pokemon in Home and overview",True))
+        toggleaction_b.setChecked(config.get("show_pokemon_in_home_and_overview",True))
 
         mw.pokemenu.addAction(toggleaction_c)
         toggleaction_c.setChecked(config.get("show_pokemon_in_reviewer",True))

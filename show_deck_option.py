@@ -18,7 +18,7 @@ def pokemon_icon_click():
         config = mw.addonManager.getConfig(__name__)
         checked = config["show_pokemon_in_reviewer"] = not config.get("show_pokemon_in_reviewer", True)
         mw.addonManager.writeConfig(__name__, config)
-        from .pokemon_helpers import toggle_on_or_off_top_toolbar
+        from .helpers.pokemon_helpers import toggle_on_or_off_top_toolbar
         toggle_on_or_off_top_toolbar()
 
         if hasattr(mw, 'pokemenu') and isinstance(mw.pokemenu, QMenu):

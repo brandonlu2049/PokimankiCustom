@@ -11,10 +11,10 @@
 from aqt import mw
 from aqt.qt import QAction, QMenu, qconnect
 
-from ..config import get_synced_conf
+from ..helpers.config import get_synced_conf
 from ..pokemon import *
-from ..trades import Trades
-from ..egg_exchange import EggExchange
+from ..features.trades import Trades
+from ..features.egg_exchange import EggExchange
 from ..custom_py.more_info import show_more_info
 
 # Global variables
@@ -75,10 +75,12 @@ def build_menu() -> None:
 
     mw.pokemenu.clear()
 
+    # Add the Pokémanki menu to Tools menu
+    mw.form.menuTools.addMenu(mw.pokemenu)
+
     # Disable these actions for now since they're broken
     # TODO: Fix these actions
 
-    # mw.form.menuTools.addMenu(mw.pokemenu)
     # mw.pokemenu.addAction(nicknameaction)
     # mw.prestigemenu = QMenu("&Prestige Menu", mw)
     # mw.pokemenu.addMenu(mw.prestigemenu)
