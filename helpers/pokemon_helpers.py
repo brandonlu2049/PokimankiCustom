@@ -199,9 +199,9 @@ def ProfilePokemon() -> Union[List[dict], None]:
     return pokemontotal
 
 
-def migrate_pokemon_data() -> None:
+def validate_pokemon_data() -> None:
     """
-    Migrate Pokemon data from old list format [name, deck, level, nickname] 
+    Validate Pokemon data from old list format [name, deck, level, nickname] 
     to new dictionary format {"id": ..., "name": ..., "deck": ..., "level": ..., "nickname": ...}
     """
     synced_config_data = get_synced_conf()
@@ -254,6 +254,17 @@ def migrate_pokemon_data() -> None:
         save_synced_conf("tagmon_list", migrated_tagmon)
         print("Migrated tagmon_list to dictionary format with UUIDs")
 
+    # Check for items
+    for pokemon in pokemon_list:
+        if "items" not in pokemon:
+            pokemon["items"] = {
+                "everstone": False,
+                "megastone": False,
+                "alolan": False,
+            }
+            save_synced_conf("pokemon_list", pokemon_list)
+            print("Added items to pokemon: ", pokemon["name"])
+
 
 def FirstProfilePokemon() -> None:
     """
@@ -264,7 +275,7 @@ def FirstProfilePokemon() -> None:
     """
     
     # Migrate data first
-    migrate_pokemon_data()
+    validate_pokemon_data()
 
     synced_config_data = get_synced_conf()
     
@@ -374,7 +385,7 @@ def add_xp_to_pokemon(pokemon, xp):
             pokemon = generate_by_rarity([pokemon])[0]
     else:
         evolutions = get_pokemon_evolution_mapping()
-        if pokemon["name"] in evolutions and evolutions[pokemon["name"]]["next_evolution_level"] < pokemon["level"]:
+        if pokemon["name"] in evolutions and evolutions[pokemon["name"]]["next_evolution_level"] < pokemon["level"] and pokemon["items"]["everstone"] == False:
             pokemon["name"] = evolutions[pokemon["name"]]["next_evolution"]
     set_pokemon_by_id(pokemon["id"], pokemon)
     return

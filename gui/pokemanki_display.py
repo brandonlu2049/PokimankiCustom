@@ -185,8 +185,6 @@ def _show(
 
     # Pokémon total
     txt += f'<h4 style="text-align: center; margin-top: 5px;"><b>Total:</b> {len(data)} Pokémon</h4>'
-    # print(">191")
-    # Return txt
     return txt
 
 
@@ -202,12 +200,6 @@ def _card_html(
     :return: The card html.
     :rtype: str
     """
-
-    if "items" not in pokemon:
-        pokemon["items"] = {
-            "everstone": False,
-            "megastone": False,
-        }
 
     # Get pokemon data
     name = pokemon["name"]
