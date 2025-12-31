@@ -5,7 +5,7 @@ import os
 # Import the display function to generate the Pokemon card HTML
 from ..gui.pokemanki_display import _card_html
 from ..helpers.config import get_synced_conf
-from ..helpers.pokemon_helpers import get_pokemon_by_id
+from ..helpers.pokemon_helpers import get_pokemon_by_id, validate_pokemon_data
 
 def on_webview_inject(webview: AnkiWebView) -> None:
     """Hook that fires when CSS is injected into webpages"""
@@ -19,6 +19,7 @@ def on_webview_inject(webview: AnkiWebView) -> None:
         
         # Generate the Pokemon card HTML
         pokemon_card_html = _card_html(current_pokemon, multi=False)
+        validate_pokemon_data()
         
         # Load the CSS content
         addon_dir = os.path.dirname(os.path.dirname(__file__))
