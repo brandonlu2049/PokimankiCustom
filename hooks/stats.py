@@ -9,7 +9,7 @@
 # (at your option) any later version.
 
 import aqt
-from ..utils import addon_dir
+from ..utils import addon_dir, addon_package
 
 def _onStatsOpen(dialog: aqt.stats.NewDeckStats) -> None:
     """Internal stats dialog handler."""
@@ -19,7 +19,7 @@ def _onStatsOpen(dialog: aqt.stats.NewDeckStats) -> None:
     message_handler_module = sys.modules[__name__.replace('.stats', '.message_handler')]
     message_handler_module.statsDialog = dialog
     
-    js = (addon_dir / "web.js").read_text(encoding="utf-8")
+    js = (addon_dir / "web.js").read_text(encoding="utf-8").replace("{{ADDON_PACKAGE}}", addon_package)
     dialog.form.web.eval(js)
 
 def onStatsOpen(statsDialog: aqt.stats.NewDeckStats) -> None:

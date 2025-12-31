@@ -30,7 +30,7 @@ def overview_open(overview: "Overview", content: "OverviewContent") -> None:
     if not config.get("show_pokemon_in_home_and_overview", True):
         return
 
-    js = (addon_dir / "web.js").read_text(encoding="utf-8")
+    js = (addon_dir / "web.js").read_text(encoding="utf-8").replace("{{ADDON_PACKAGE}}", addon_package)
     css = (addon_dir / "pokemanki_css" / "view_stats.css").read_text(encoding="utf-8")
 
     curr_deck = mw.col.decks.active()[0]

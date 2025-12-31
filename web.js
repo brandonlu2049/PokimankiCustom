@@ -25,7 +25,7 @@ Pokemanki.addPokemanki = function () {
   rangeBoxPad.after(divEl);
 
   link = document.createElement("link");
-  link.href = "/_addons/1677779223/pokemanki_css/view_stats.css";
+  link.href = "/_addons/{{ADDON_PACKAGE}}/pokemanki_css/view_stats.css";
   link.rel = "stylesheet";
   document.head.appendChild(link);
 };
@@ -73,42 +73,42 @@ Pokemanki.initLoadInterval = window.setInterval(Pokemanki.initialLoad, 50);
 // 画像ﾌｧｲﾙのURLを配列に格納
 // "C:\Users\shigg\AppData\Roaming\Anki2\addons21\1677779223\custom_py\Pokemon_Breeder_f_OD_01.png"
 // let images = [
-//     '/_addons/1677779223/custom_py/pipo-popupemotes002.png',
-//     '/_addons/1677779223/custom_py/pipo-popupemotes002.png',
-//     '/_addons/1677779223/custom_py/pipo-popupemotes003.png',
+//     '/_addons/{{ADDON_PACKAGE}}/custom_py/pipo-popupemotes002.png',
+//     '/_addons/{{ADDON_PACKAGE}}/custom_py/pipo-popupemotes002.png',
+//     '/_addons/{{ADDON_PACKAGE}}/custom_py/pipo-popupemotes003.png',
 //     // 他の画像ﾌｧｲﾙのURLをここに追加...
 // ];
 
 let images = [
-  "/_addons/1677779223/custom_py/pipoya_popup/pipo-popupemotes065.png",
-  "/_addons/1677779223/custom_py/pipoya_popup/pipo-popupemotes066.png",
-  "/_addons/1677779223/custom_py/pipoya_popup/pipo-popupemotes053.png",
-  "/_addons/1677779223/custom_py/pipoya_popup/pipo-popupemotes058.png",
-  "/_addons/1677779223/custom_py/pipoya_popup/pipo-popupemotes059.png",
-  "/_addons/1677779223/custom_py/pipoya_popup/pipo-popupemotes044.png",
-  "/_addons/1677779223/custom_py/pipoya_popup/pipo-popupemotes001.png",
-  "/_addons/1677779223/custom_py/pipoya_popup/pipo-popupemotes002.png",
-  "/_addons/1677779223/custom_py/pipoya_popup/pipo-popupemotes004.png",
-  "/_addons/1677779223/custom_py/pipoya_popup/pipo-popupemotes005.png",
-  "/_addons/1677779223/custom_py/pipoya_popup/pipo-popupemotes007.png",
-  "/_addons/1677779223/custom_py/pipoya_popup/pipo-popupemotes009.png",
-  "/_addons/1677779223/custom_py/pipoya_popup/pipo-popupemotes013.png",
-  "/_addons/1677779223/custom_py/pipoya_popup/pipo-popupemotes014.png",
-  "/_addons/1677779223/custom_py/pipoya_popup/pipo-popupemotes017.png",
-  "/_addons/1677779223/custom_py/pipoya_popup/pipo-popupemotes032.png",
-  "/_addons/1677779223/custom_py/pipoya_popup/pipo-popupemotes050.png",
-  "/_addons/1677779223/custom_py/pipoya_popup/pipo-popupemotes051.png",
-  "/_addons/1677779223/custom_py/pipoya_popup/pipo-popupemotes052.png",
-  "/_addons/1677779223/custom_py/pipoya_popup/pipo-popupemotes060.png",
-  "/_addons/1677779223/custom_py/pipoya_popup/pipo-popupemotes069.png",
-  "/_addons/1677779223/custom_py/pipoya_popup/pipo-popupemotes075.png",
-  "/_addons/1677779223/custom_py/pipoya_popup/pipo-popupemotes076.png",
-  "/_addons/1677779223/custom_py/pipoya_popup/pipo-popupemotes077.png",
-  "/_addons/1677779223/custom_py/pipoya_popup/pipo-popupemotes078.png",
-  "/_addons/1677779223/custom_py/pipoya_popup/pipo-popupemotes080.png",
-  "/_addons/1677779223/custom_py/pipoya_popup/pipo-popupemotes087.png",
-  "/_addons/1677779223/custom_py/pipoya_popup/pipo-popupemotes097.png",
-  "/_addons/1677779223/custom_py/pipoya_popup/pipo-popupemotes064.png",
+  "/_addons/{{ADDON_PACKAGE}}/custom_py/pipoya_popup/pipo-popupemotes065.png",
+  "/_addons/{{ADDON_PACKAGE}}/custom_py/pipoya_popup/pipo-popupemotes066.png",
+  "/_addons/{{ADDON_PACKAGE}}/custom_py/pipoya_popup/pipo-popupemotes053.png",
+  "/_addons/{{ADDON_PACKAGE}}/custom_py/pipoya_popup/pipo-popupemotes058.png",
+  "/_addons/{{ADDON_PACKAGE}}/custom_py/pipoya_popup/pipo-popupemotes059.png",
+  "/_addons/{{ADDON_PACKAGE}}/custom_py/pipoya_popup/pipo-popupemotes044.png",
+  "/_addons/{{ADDON_PACKAGE}}/custom_py/pipoya_popup/pipo-popupemotes001.png",
+  "/_addons/{{ADDON_PACKAGE}}/custom_py/pipoya_popup/pipo-popupemotes002.png",
+  "/_addons/{{ADDON_PACKAGE}}/custom_py/pipoya_popup/pipo-popupemotes004.png",
+  "/_addons/{{ADDON_PACKAGE}}/custom_py/pipoya_popup/pipo-popupemotes005.png",
+  "/_addons/{{ADDON_PACKAGE}}/custom_py/pipoya_popup/pipo-popupemotes007.png",
+  "/_addons/{{ADDON_PACKAGE}}/custom_py/pipoya_popup/pipo-popupemotes009.png",
+  "/_addons/{{ADDON_PACKAGE}}/custom_py/pipoya_popup/pipo-popupemotes013.png",
+  "/_addons/{{ADDON_PACKAGE}}/custom_py/pipoya_popup/pipo-popupemotes014.png",
+  "/_addons/{{ADDON_PACKAGE}}/custom_py/pipoya_popup/pipo-popupemotes017.png",
+  "/_addons/{{ADDON_PACKAGE}}/custom_py/pipoya_popup/pipo-popupemotes032.png",
+  "/_addons/{{ADDON_PACKAGE}}/custom_py/pipoya_popup/pipo-popupemotes050.png",
+  "/_addons/{{ADDON_PACKAGE}}/custom_py/pipoya_popup/pipo-popupemotes051.png",
+  "/_addons/{{ADDON_PACKAGE}}/custom_py/pipoya_popup/pipo-popupemotes052.png",
+  "/_addons/{{ADDON_PACKAGE}}/custom_py/pipoya_popup/pipo-popupemotes060.png",
+  "/_addons/{{ADDON_PACKAGE}}/custom_py/pipoya_popup/pipo-popupemotes069.png",
+  "/_addons/{{ADDON_PACKAGE}}/custom_py/pipoya_popup/pipo-popupemotes075.png",
+  "/_addons/{{ADDON_PACKAGE}}/custom_py/pipoya_popup/pipo-popupemotes076.png",
+  "/_addons/{{ADDON_PACKAGE}}/custom_py/pipoya_popup/pipo-popupemotes077.png",
+  "/_addons/{{ADDON_PACKAGE}}/custom_py/pipoya_popup/pipo-popupemotes078.png",
+  "/_addons/{{ADDON_PACKAGE}}/custom_py/pipoya_popup/pipo-popupemotes080.png",
+  "/_addons/{{ADDON_PACKAGE}}/custom_py/pipoya_popup/pipo-popupemotes087.png",
+  "/_addons/{{ADDON_PACKAGE}}/custom_py/pipoya_popup/pipo-popupemotes097.png",
+  "/_addons/{{ADDON_PACKAGE}}/custom_py/pipoya_popup/pipo-popupemotes064.png",
 ];
 
 Pokemanki.bounce = function bounce(img) {

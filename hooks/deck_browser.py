@@ -16,7 +16,7 @@ from aqt.deckbrowser import DeckBrowser, DeckBrowserContent
 
 from ..helpers.config import get_synced_conf
 from ..gui.pokemanki_display import pokemon_display
-from ..utils import addon_dir
+from ..utils import addon_dir, addon_package
 from ..helpers.pokemon_helpers import get_pokemon_icon_and_level
 
 # In-memory flag to prevent re-entrant calls during rendering
@@ -49,7 +49,7 @@ def deck_browser_open(deck_browser: "DeckBrowser", content: "DeckBrowserContent"
     except:
         return
 
-    js = (addon_dir / "web.js").read_text(encoding="utf-8")
+    js = (addon_dir / "web.js").read_text(encoding="utf-8").replace("{{ADDON_PACKAGE}}", addon_package)
     css = (addon_dir / "pokemanki_css" / "view_stats.css").read_text(encoding="utf-8")
 
     _is_rendering = True  # Use in-memory flag instead of config
