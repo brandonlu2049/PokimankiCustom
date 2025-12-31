@@ -16,8 +16,6 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import os
-import random
 import uuid
 
 from typing import List, Union
@@ -25,7 +23,7 @@ from typing import List, Union
 from aqt import mw
 
 from ..helpers.pokemon_helpers import ProfilePokemon, RARITY_COLOR_MAP, HATCH_EGG_LEVEL, set_pokemon_by_id, get_pokemon_image_name
-from ..helpers.config import get_local_conf
+from ..helpers.config import get_local_conf, save_synced_conf
 from ..utils import *
 
 from ..custom_py.set_js_message import *
@@ -169,17 +167,17 @@ def _card_html(
     # Get pokemon data
     name = pokemon["name"]
     # Ensure items dict exists (for backwards compatibility with old data)
-    items = pokemon.get("items", {"megastone": False, "alolan": False, "everstone": False})
-    if items.get("megastone"):
-        name = "Mega " + name
-        if pokemon["name"] == "Charizard" or pokemon["name"] == "Mewtwo":
-            name += " " + get_local_conf()["X_or_Y_mega_evolutions"]
-    if items.get("alolan"):
-        name = "Alolan " + name
     level = pokemon["level"]
     nickname = pokemon["nickname"]
     id = pokemon["id"]
     current_pokemon_id = get_synced_conf()["current_pokemon_id"]
+    image_name = get_pokemon_image_name(pokemon) 
+    if "Mega" in image_name:
+        name = "Mega " + name
+        if pokemon["name"] == "Charizard" or pokemon["name"] == "Mewtwo":
+            name += " " + get_local_conf()["X_or_Y_mega_evolutions"]
+    if "Alola" in image_name:
+        name = "Alolan " + name
 
     # Start card
     current_class = " pk-st-current" if current_pokemon_id == id else ""
@@ -239,9 +237,9 @@ def _card_html(
     pokemon_sound_name = re.sub(r"'", '_', name)  # for Farfetchd
     
     if config[POKE_TYPE]:
-        card += f'<img style="cursor: pointer;" src="{pkmnimgfolder}/{get_pokemon_image_name(pokemon)}.webp" class="pk-st-card-img" onclick="Pokemanki.bounce(this); pycmd(\'shige_pokemon_sound:{pokemon_sound_name}\');"/>'
+        card += f'<img style="cursor: pointer;" src="{pkmnimgfolder}/{image_name}.webp" class="pk-st-card-img" onclick="Pokemanki.bounce(this); pycmd(\'shige_pokemon_sound:{pokemon_sound_name}\');"/>'
     else:
-        card += f'<img style="cursor: pointer;" src="{pkmnimgfolder_B}/{get_pokemon_image_name(pokemon)}.webp" class="pk-st-card-img" onclick="Pokemanki.bounce(this); pycmd(\'shige_pokemon_sound:{pokemon_sound_name}\');"/>'
+        card += f'<img style="cursor: pointer;" src="{pkmnimgfolder_B}/{image_name}.webp" class="pk-st-card-img" onclick="Pokemanki.bounce(this); pycmd(\'shige_pokemon_sound:{pokemon_sound_name}\');"/>'
 
 
 
@@ -255,7 +253,7 @@ def _card_html(
     # Held/SP
     held = _held_html(pokemon)
     if held != "":
-        card += '<div class="pk-st-card-sp">' "<span><b>SP: </b></span>"
+        card += '<div class="pk-st-card-sp">' "<span><b>Items: </b></span>"
         card += held
         card += "</div>"
     # Progress bar
