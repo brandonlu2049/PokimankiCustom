@@ -9,6 +9,10 @@ def save_changes(pokemon_id: str, nickname: str, everstone: bool, megastone: boo
     pokemon_data = get_pokemon_by_id(pokemon_id)
     pokemon_data["nickname"] = nickname
     
+    # Ensure items dict exists (for backwards compatibility with old data)
+    if "items" not in pokemon_data:
+        pokemon_data["items"] = {"everstone": False, "megastone": False, "alolan": False}
+    
     # Update items
     pokemon_data["items"]["everstone"] = everstone
     pokemon_data["items"]["megastone"] = megastone

@@ -1,4 +1,5 @@
 import csv
+import os
 import random
 import re
 import uuid
@@ -309,13 +310,8 @@ def FirstProfilePokemon() -> None:
             if hasattr(msgbox, 'change_icon_path'): msgbox.display_image_below_text(starter)
         msgbox.exec()
         starter_pokemon_name = msgbox.clickedButton().text()
-        pokemon_list.append({
-            "id": str(uuid.uuid4()),
-            "name": starter_pokemon_name,
-            "deck": -1,
-            "level": 1,
-            "nickname": None
-        })
+        starter_pokemon = create_pokemon(starter_pokemon_name, 1, "A")
+        pokemon_list.append(starter_pokemon)
         save_synced_conf("pokemon_list", pokemon_list)
         print("Added starter pokemon to profile Pokemon list: ", starter_pokemon_name)
 
@@ -392,7 +388,9 @@ def add_xp_to_pokemon(pokemon, xp):
             pokemon = generate_by_rarity([pokemon])[0]
     else:
         evolutions = get_pokemon_evolution_mapping()
-        if pokemon["name"] in evolutions and evolutions[pokemon["name"]]["next_evolution_level"] < pokemon["level"] and pokemon["items"]["everstone"] == False:
+        # Ensure items dict exists (for backwards compatibility with old data)
+        items = pokemon.get("items", {"everstone": False, "megastone": False, "alolan": False})
+        if pokemon["name"] in evolutions and evolutions[pokemon["name"]]["next_evolution_level"] < pokemon["level"] and items.get("everstone") == False:
             pokemon["name"] = evolutions[pokemon["name"]]["next_evolution"]
     set_pokemon_by_id(pokemon["id"], pokemon)
     return
@@ -486,16 +484,18 @@ def get_pokemon_image_name(pokemon) -> str:
     pkmnimgfolder = addon_dir / "pokemon_images"
 
     fullname = pokemon["name"]
-    if pokemon["items"]["everstone"]:
+    # Ensure items dict exists (for backwards compatibility with old data)
+    items = pokemon.get("items", {"everstone": False, "megastone": False, "alolan": False})
+    if items.get("everstone"):
         if pokemon["name"] == "Pikachu":
             if random.randint(1, 5) != 1:  # 4 in 5 chance
                 fullname += "_Ash" + str(random.randint(1, 4)) # added
-    if pokemon["items"]["megastone"]:
+    if items.get("megastone"):
         if any([pokemon["name"] + "_Mega" in imgname for imgname in os.listdir(pkmnimgfolder)]):
             fullname += "_Mega"
             if pokemon["name"] == "Charizard" or pokemon["name"] == "Mewtwo":
                 fullname += get_local_conf()["X_or_Y_mega_evolutions"]
-    if pokemon["items"]["alolan"]:
+    if items.get("alolan"):
         if any([pokemon["name"] + "_Alola" in imgname for imgname in os.listdir(pkmnimgfolder)]):
             fullname += "_Alola"
 

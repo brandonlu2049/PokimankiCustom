@@ -171,10 +171,11 @@ class PokemonCustomizationDialog(CustomDialog):
         nickname = self.pokemon_data.get("nickname", "")
         self.nickname_input.setText(nickname if nickname else "")
         
-        # Load items status
-        self.everstone_checkbox.setChecked(self.pokemon_data["items"]["everstone"])
-        self.megastone_checkbox.setChecked(self.pokemon_data["items"]["megastone"])
-        self.alolan_checkbox.setChecked(self.pokemon_data["items"]["alolan"])
+        # Load items status (with backwards compatibility for old data)
+        items = self.pokemon_data.get("items", {"everstone": False, "megastone": False, "alolan": False})
+        self.everstone_checkbox.setChecked(items.get("everstone", False))
+        self.megastone_checkbox.setChecked(items.get("megastone", False))
+        self.alolan_checkbox.setChecked(items.get("alolan", False))
 
     def _save_changes(self):
         save_changes(

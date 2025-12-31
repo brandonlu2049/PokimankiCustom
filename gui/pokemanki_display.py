@@ -168,11 +168,13 @@ def _card_html(
 
     # Get pokemon data
     name = pokemon["name"]
-    if pokemon["items"]["megastone"]:
+    # Ensure items dict exists (for backwards compatibility with old data)
+    items = pokemon.get("items", {"megastone": False, "alolan": False, "everstone": False})
+    if items.get("megastone"):
         name = "Mega " + name
         if pokemon["name"] == "Charizard" or pokemon["name"] == "Mewtwo":
             name += " " + get_local_conf()["X_or_Y_mega_evolutions"]
-    if pokemon["items"]["alolan"]:
+    if items.get("alolan"):
         name = "Alolan " + name
     level = pokemon["level"]
     nickname = pokemon["nickname"]
@@ -321,11 +323,13 @@ def _held_html(pokemon) -> str:
     megastone_html = f'<img src="{pkmnimgfolder}/item_Mega_Stone.webp" height="25px"/>'
     alolan_html = f'<img src="{pkmnimgfolder}/item_Alolan_Passport.webp" height="25px"/>'
 
-    if pokemon["items"]["everstone"]:
+    # Ensure items dict exists (for backwards compatibility with old data)
+    items = pokemon.get("items", {"megastone": False, "alolan": False, "everstone": False})
+    if items.get("everstone"):
         held += everstone_html
-    if pokemon["items"]["alolan"]:
+    if items.get("alolan"):
         held += alolan_html
-    if pokemon["items"]["megastone"]:
+    if items.get("megastone"):
         held += megastone_html
 
     return held
