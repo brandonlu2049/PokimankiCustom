@@ -12,65 +12,47 @@ from aqt import mw
 from aqt.qt import QAction, QMenu, qconnect
 
 from ..helpers.config import get_synced_conf
-from ..pokemon import *
+from ..helpers.pokemon_helpers import reset_pokemanki
 from ..features.trades import Trades
 from ..features.egg_exchange import EggExchange
+from ..features.shop import Shop
 from ..custom_py.more_info import show_more_info
 
 # Global variables
 tradeclass = object()
 eggexchangeclass = object()
+shopclass = object()
 tags = object()
 
 def reset_menu_globals():
     """Reset global menu variables."""
-    global tradeclass, eggexchangeclass, tags
+    global tradeclass, eggexchangeclass, shopclass, tags
     tradeclass = object()
     eggexchangeclass = object()
+    shopclass = object()
     tags = object()
 
 def build_menu() -> None:
     """Build the Pokemanki menu."""
-    global tradeclass, eggexchangeclass
+    global tradeclass, eggexchangeclass, shopclass
 
     # Make actions for settings and reset
     nicknameaction = QAction("&Nicknames", mw)
     resetaction = QAction("&Reset", mw)
     tradeaction = QAction("&Trade", mw)
     eggexchangeaction = QAction("&Egg Exchange", mw)
-    prestigeaction = QAction("&Prestige Pokémon", mw)
-    unprestigeaction = QAction("&Unprestige Pokémon", mw)
-
-    everstoneaction = QAction("&Give Everstone", mw)
-    uneverstoneaction = QAction("&Take Everstone", mw)
-
-    megastoneaction = QAction("&Give Mega Stone", mw)
-    unmegastoneaction = QAction("&Take Mega Stone", mw)
-    alolanaction = QAction("&Give Alolan Passport", mw)
-    unalolanaction = QAction("&Take Alolan Passport", mw)
-    
-    bottomaction = QAction("Move Pokémon to &Bottom", mw)
-    topaction = QAction("Move Pokémon to &Top", mw)
+    shopaction = QAction("&Shop", mw)
     
     aAbout = QAction("About", mw)
 
     # Connect actions to functions
     tradeclass = Trades()
     eggexchangeclass = EggExchange()
-    qconnect(nicknameaction.triggered, nickname)
+    shopclass = Shop()
     qconnect(resetaction.triggered, reset_pokemanki)
     qconnect(tradeaction.triggered, tradeclass.open)
     qconnect(eggexchangeaction.triggered, eggexchangeclass.open)
-    qconnect(prestigeaction.triggered, PrestigePokemon)
-    qconnect(unprestigeaction.triggered, UnprestigePokemon)
-    qconnect(everstoneaction.triggered, giveEverstone)
-    qconnect(uneverstoneaction.triggered, takeEverstone)
-    qconnect(megastoneaction.triggered, giveMegastone)
-    qconnect(unmegastoneaction.triggered, takeMegastone)
-    qconnect(alolanaction.triggered, giveAlolanPassport)
-    qconnect(unalolanaction.triggered, takeAlolanPassport)
-    qconnect(bottomaction.triggered, MovetoBottom)
-    qconnect(topaction.triggered, MovetoTop)
+    qconnect(shopaction.triggered, shopclass.open)
     qconnect(aAbout.triggered, show_more_info)
 
     mw.pokemenu.clear()
@@ -78,31 +60,10 @@ def build_menu() -> None:
     # Add the Pokémanki menu to Tools menu
     mw.form.menuTools.addMenu(mw.pokemenu)
 
-    # Disable these actions for now since they're broken
-    # TODO: Fix these actions
-
-    # mw.pokemenu.addAction(nicknameaction)
-    # mw.prestigemenu = QMenu("&Prestige Menu", mw)
-    # mw.pokemenu.addMenu(mw.prestigemenu)
-    # mw.prestigemenu.addAction(prestigeaction)
-    # mw.prestigemenu.addAction(unprestigeaction)
-
-    # mw.everstonemenu = QMenu("&Everstone", mw)
-    # mw.pokemenu.addMenu(mw.everstonemenu)
-    # mw.everstonemenu.addAction(everstoneaction)
-    # mw.everstonemenu.addAction(uneverstoneaction)
-    # mw.megastonemenu = QMenu("&Mega Stone", mw)
-    # mw.pokemenu.addMenu(mw.megastonemenu)
-    # mw.megastonemenu.addAction(megastoneaction)
-    # mw.megastonemenu.addAction(unmegastoneaction)
-    # mw.alolanmenu = QMenu("&Alolan Passport", mw)
-    # mw.pokemenu.addMenu(mw.alolanmenu)
-    # mw.alolanmenu.addAction(alolanaction)
-    # mw.alolanmenu.addAction(unalolanaction)
-
-    # Add trade and egg exchange actions
+    # Add trade, egg exchange, and shop actions
     mw.pokemenu.addAction(tradeaction)
     mw.pokemenu.addAction(eggexchangeaction)
+    mw.pokemenu.addAction(shopaction)
     mw.pokemenu.addAction(resetaction)
     mw.pokemenu.addAction(aAbout)
         

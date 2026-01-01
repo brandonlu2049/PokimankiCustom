@@ -16,9 +16,11 @@ Initializes generated Qt forms/resources
 __all__ = [
     "pokemanki_trade",
     "pokemanki_options",
-    "pokemanki_egg_exchange"
+    "pokemanki_egg_exchange",
+    "pokemanki_shop"
 ]
 
 from . import pokemanki_trade
 from . import pokemanki_options
 from . import pokemanki_egg_exchange
+from . import pokemanki_shop

@@ -19,6 +19,7 @@
 import bisect
 import os
 import random
+import time
 from datetime import datetime, timedelta
 
 from aqt import mw
@@ -31,27 +32,52 @@ from ..helpers.pokemon_helpers import get_pokemon_by_id, set_pokemon_by_id, add_
 LEVEL_INCREMENT_AMOUNT_COMPLETION = 0.05
 CARDS_PER_EGG = 300
 
+
+def get_cards_since_last_session():
+    """Get cards reviewed since last session end (syncs across devices via revlog)"""
+    if not mw or not mw.col:
+        return 0
+    
+    synced_config = get_synced_conf()
+    last_session_time = synced_config.get("last_session_end_time", 0)
+    
+    count = mw.col.db.scalar(
+        "SELECT COUNT() FROM revlog WHERE id > ?",
+        last_session_time
+    )
+    return count or 0
+
+
+def save_session_end_time():
+    """Save current time as last session end (in milliseconds for revlog comparison)"""
+    save_synced_conf("last_session_end_time", int(time.time() * 1000))
+
+
 def pokemon_finish_session(*args, **kwargs):    
     """Called when a study session ends to calculate and award XP"""
 
     if mw and mw.col:
         synced_config_data = get_synced_conf()
         
+        # Get cards reviewed since last session (from synced revlog - works across devices)
+        cards_since_last_session = get_cards_since_last_session()
+        
         # Initialize card_counter if it doesn't exist (for backward compatibility)
         if "card_counter" not in synced_config_data:
             synced_config_data["card_counter"] = 0
         
-        card_counter = synced_config_data["card_counter"]
-        cards_studied_today = synced_config_data["cards_this_session"]
+        # Add cards from this session to the persistent counter
+        # card_counter tracks remaining cards after subtracting eggs/trades earned
+        card_counter = synced_config_data["card_counter"] + cards_since_last_session
         
-        print(f"Congratulations! Cards studied today: {cards_studied_today}")
-        print(f"Current egg counter: {card_counter}")
+        print(f"Congratulations! Cards studied this session (across all devices): {cards_since_last_session}")
+        print(f"Current egg counter (before rewards): {card_counter}")
         
         current_pokemon_id = synced_config_data["current_pokemon_id"]
         current_pokemon = get_pokemon_by_id(current_pokemon_id)
 
-        print(f"Granting: {cards_studied_today * LEVEL_INCREMENT_AMOUNT_COMPLETION} XP for finishing the study session today!")
-        add_xp_to_pokemon(current_pokemon, cards_studied_today * LEVEL_INCREMENT_AMOUNT_COMPLETION)
+        print(f"Granting: {cards_since_last_session * LEVEL_INCREMENT_AMOUNT_COMPLETION} XP for finishing the study session!")
+        add_xp_to_pokemon(current_pokemon, cards_since_last_session * LEVEL_INCREMENT_AMOUNT_COMPLETION)
         set_pokemon_by_id(current_pokemon_id, current_pokemon)
 
         # Calculate eggs based on persistent counter
@@ -75,9 +101,12 @@ def pokemon_finish_session(*args, **kwargs):
         trade_refresh_counter += trade_refreshes_earned
         save_synced_conf("trade_refresh_counter", trade_refresh_counter)
         
-        # Reset counters - subtract the cards used for eggs from card_counter
+        # Subtract the cards used for eggs/trades from card_counter (keep the remainder)
         remaining_card_counter = card_counter - (eggs_earned * CARDS_PER_EGG)
         save_synced_conf("card_counter", remaining_card_counter)
-        save_synced_conf("cards_this_session", 0)
+        print(f"Remaining card counter (after rewards): {remaining_card_counter}")
+        
+        # Save the current time so next session knows where to start counting from
+        save_session_end_time()
         
     return

@@ -22,7 +22,7 @@ from typing import List, Union
 
 from aqt import mw
 
-from ..helpers.pokemon_helpers import ProfilePokemon, RARITY_COLOR_MAP, HATCH_EGG_LEVEL, set_pokemon_by_id, get_pokemon_image_name
+from ..helpers.pokemon_helpers import ProfilePokemon, RARITY_COLOR_MAP, HATCH_EGG_LEVEL, set_pokemon_by_id, get_pokemon_image_name, create_pokemon
 from ..helpers.config import get_local_conf, save_synced_conf
 from ..utils import *
 
@@ -88,6 +88,7 @@ def _show(
     # if f != "tags":
     buttons_html += f'<button style="{common_style}" onclick="pycmd(\'shige_pokemanki_button_1\')">Trade</button>'
     buttons_html += f'<button style="{common_style}" onclick="pycmd(\'egg_exchange_pokemanki_button\')">Egg Exchange</button>'
+    buttons_html += f'<button style="{common_style}" onclick="pycmd(\'shop_pokemanki_button\')">Shop</button>'
     buttons_html += f'<button style="{common_style}" onclick="pycmd(\'shige_pokemanki_button_2\')">Options</button>'
     buttons_html += f'<button style="{common_style}" onclick="pycmd(\'shige_pokemanki_button_3\')">PokeType</button>'
     buttons_html += f'<button style="{common_style}" onclick="pycmd(\'shige_pokemanki_button_4\')">More Info</button>'

@@ -10,7 +10,7 @@ from aqt import mw, gui_hooks
 from aqt.qt import *
 from aqt.utils import showInfo
 
-from .config import get_local_conf, get_synced_conf, save_synced_conf
+from .config import get_local_conf, get_synced_conf, save_synced_conf, setup_default_synced_conf
 from ..utils import pkmnimgfolder, pkmnimgfolder_B, addon_package, addon_dir
 from ..stats import MultiStats, TagStats, cardInterval, cardIdsFromDeckIds
 from ..custom_py.path_manager import (CustomWidget as QWidget, CustomMessageBox as QMessageBox)
@@ -706,3 +706,31 @@ def remove_pokemon_by_id(id: str) -> None:
             break
     save_synced_conf("pokemon_list", pokemon_list)
     return removed_pokemon
+
+# =============================================================================
+# Pokemon Reset
+# =============================================================================
+
+def reset_pokemanki() -> None:
+    # Make message box
+    resetwindow = QMessageBox()
+    if hasattr(resetwindow, 'change_icon_path'): resetwindow.change_icon_path() # ｶｽﾀﾑ
+    resetwindow.setWindowTitle("Pokémanki")
+    resetwindow.setText(
+        """
+        Are you sure you want to reset your Pokémon?
+        This will reset all your synced settings.
+        All your Pokémon will be lost - both in deck and tag mode.
+        """
+    )
+    resetwindow.setStandardButtons(
+        QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+    )
+    resetwindow.setDefaultButton(QMessageBox.StandardButton.No)
+    resetresult = resetwindow.exec()
+    # Reset synced Pokémanki config if Yes
+    if resetresult == QMessageBox.StandardButton.Yes:
+        setup_default_synced_conf()
+        # TODO reset everstone? and other stuff?
+        # Message box confirming reset
+        showInfo("Pokémanki config reset", parent=mw, title="Pokémanki")

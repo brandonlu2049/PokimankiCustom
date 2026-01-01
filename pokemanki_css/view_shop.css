@@ -1,0 +1,229 @@
+/* ===== Shop Title ===== */
+.shop-title-container {
+  text-align: center;
+  margin-bottom: 20px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #2c5aa0;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.shop-heading-container {
+  text-align: center;
+  margin-bottom: 20px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #555;
+}
+
+/* ===== Pokecoin Counter ===== */
+.shop-pokecoin-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%);
+  border: 2px solid #ffc107;
+  border-radius: 12px;
+  padding: 12px 20px;
+  margin: 0 auto 25px auto;
+  max-width: 300px;
+  box-shadow: 0 3px 10px rgba(255, 193, 7, 0.3);
+  font-size: 1.4em;
+  font-weight: bold;
+  color: #856404;
+}
+
+/* ===== Shop Items Container ===== */
+.shop-items-container {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px;
+  flex-wrap: wrap;
+}
+
+/* ===== Base Shop Item ===== */
+.shop-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  border-radius: 16px;
+  padding: 20px;
+  min-width: 180px;
+  max-width: 220px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* ===== Egg Machine Item ===== */
+.shop-item-egg {
+  background: linear-gradient(145deg, #e8f5e9 0%, #c8e6c9 50%, #a5d6a7 100%);
+  border: 3px solid #4caf50;
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+}
+
+.shop-item-egg:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(76, 175, 80, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.shop-item-egg:active {
+  transform: translateY(-2px) scale(1.01);
+}
+
+/* Glow effect behind the egg */
+.shop-item-glow {
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(
+    circle,
+    rgba(255, 235, 59, 0.6) 0%,
+    transparent 70%
+  );
+  border-radius: 50%;
+  animation: egg-glow 2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes egg-glow {
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: translateX(-50%) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.2);
+  }
+}
+
+/* ===== Shop Item Image ===== */
+.shop-item-image {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 90px;
+  margin-bottom: 5px;
+}
+
+.shop-item-image img {
+  height: 80px;
+  width: auto;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
+  transition: transform 0.3s ease;
+}
+
+.shop-item-egg:hover .shop-item-image img {
+  transform: scale(1.1) rotate(5deg);
+  animation: egg-wobble 0.5s ease-in-out;
+}
+
+@keyframes egg-wobble {
+  0%,
+  100% {
+    transform: scale(1.1) rotate(5deg);
+  }
+  25% {
+    transform: scale(1.1) rotate(-3deg);
+  }
+  75% {
+    transform: scale(1.1) rotate(3deg);
+  }
+}
+
+/* ===== Shop Item Name ===== */
+.shop-item-name {
+  font-size: 1.1em;
+  font-weight: bold;
+  color: #2e7d32;
+  text-align: center;
+  margin-top: 5px;
+}
+
+/* ===== Shop Item Description ===== */
+.shop-item-description {
+  font-size: 0.85em;
+  color: #558b2f;
+  text-align: center;
+  font-style: italic;
+  margin-bottom: 5px;
+}
+
+/* ===== Shop Item Price ===== */
+.shop-item-price {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+  border: 2px solid #ffa000;
+  border-radius: 20px;
+  padding: 6px 14px;
+  margin: 8px 0;
+}
+
+.shop-item-price img {
+  height: 24px;
+  width: auto;
+}
+
+.shop-item-price span {
+  font-size: 1em;
+  font-weight: bold;
+  color: #e65100;
+}
+
+/* ===== Buy Button ===== */
+.shop-item-buy-btn {
+  background: linear-gradient(180deg, #66bb6a 0%, #43a047 100%);
+  border: none;
+  border-radius: 8px;
+  padding: 10px 24px;
+  color: white;
+  font-size: 0.95em;
+  font-weight: bold;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 3px 0 #2e7d32, 0 5px 10px rgba(0, 0, 0, 0.2);
+  transition: all 0.15s ease;
+  margin-top: auto;
+}
+
+.shop-item-buy-btn:hover {
+  background: linear-gradient(180deg, #81c784 0%, #66bb6a 100%);
+  box-shadow: 0 3px 0 #2e7d32, 0 6px 15px rgba(0, 0, 0, 0.25);
+}
+
+.shop-item-buy-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #2e7d32, 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* ===== Coming Soon Item ===== */
+.shop-item-coming-soon {
+  background: linear-gradient(145deg, #f5f5f5 0%, #e0e0e0 100%);
+  border: 2px dashed #9e9e9e;
+  min-height: 280px;
+  justify-content: center;
+}
+
+.shop-item-coming-soon span {
+  color: #757575;
+  font-style: italic;
+  font-size: 0.95em;
+}

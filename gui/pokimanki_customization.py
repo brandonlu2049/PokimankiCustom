@@ -140,6 +140,11 @@ class PokemonCustomizationDialog(CustomDialog):
         
         self.alolan_checkbox = QCheckBox("Alolan Passport (Alolan form)")
         items_layout.addWidget(self.alolan_checkbox)
+
+        if self.pokemon_data.get("name") == "Egg":
+            self.everstone_checkbox.setDisabled(True)
+            self.megastone_checkbox.setDisabled(True)
+            self.alolan_checkbox.setDisabled(True)
         
         items_group.setLayout(items_layout)
         layout.addWidget(items_group)

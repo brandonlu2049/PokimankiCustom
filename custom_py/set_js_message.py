@@ -145,6 +145,15 @@ def addButtons(handled, message, context):
                 break
         return (True, None)
 
+    elif message == "shop_pokemanki_button":
+        print("Shop button clicked")
+        actions = mw.pokemenu.actions()
+        for action in actions:
+            if action.text() == "&Shop":
+                action.trigger()
+                break
+        return (True, None)
+
     elif "customize_pokemon" in message:
         parts = message.split(":", 1)
         if len(parts) == 2:
